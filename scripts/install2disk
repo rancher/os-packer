@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e
+
+sudo system-docker run -it --privileged cloudnautique/installer:latest /scripts/set-disk-partitions /dev/sda
+sudo system-docker start udev
+sudo system-docker run -it --privileged cloudnautique/installer:latest /scripts/lay-down-os /dev/sda
