@@ -1,0 +1,32 @@
+{
+    "builders": [
+        {
+            "type": "virtualbox-iso",
+            "guest_os_type": "Linux_64",
+            "iso_url": "./rancheros.iso",
+            "iso_checksum": "df38cad9403f92437263ab0e18f1862a",
+            "iso_checksum_type": "md5",
+            "vboxmanage": [
+                ["modifyvm", "{{.Name}}", "--memory", "1024"]
+            ],
+            "boot_wait": "15s",
+            "ssh_username": "rancher",
+            "ssh_password": "rancher",
+            "ssh_wait_timeout": "60s",
+            "guest_additions_mode": "disable"
+        }
+    ],
+    "provisioners": [
+        {
+            "type":"shell",
+            "script": "./scripts/install2disk",
+            "only": ["virtualbox-iso"]
+        }
+    ],
+    "post-processors": [
+        {
+            "type": "vagrant",
+            "output": "./vagrant/x86_64/prod/rancheros_{{.Provider}}.box"
+        }
+    ]
+}
