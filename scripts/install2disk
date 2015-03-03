@@ -2,14 +2,14 @@
 
 set -e -x
 
-VERSION=beta
+VERSION=alpha
 
 DEVICE=/dev/xvda
 
 if [ "$PACKER_BUILDER_TYPE" == "virtualbox-iso" ]; then
     export DEVICE=/dev/sda
-    sudo system-docker run -it --privileged cloudnautique/installer:${VERSION} /scripts/set-disk-partitions ${DEVICE}
+    sudo system-docker run --net=host -it --privileged --entrypoint=/scripts/set-disk-partitions cloudnautique/installer:${VERSION} ${DEVICE}
     sudo system-docker start udev
 fi
 
-sudo system-docker run -it --privileged cloudnautique/installer:${VERSION} /scripts/lay-down-os ${DEVICE} $PACKER_BUILDER_TYPE
+sudo system-docker run --net=host -it --privileged cloudnautique/installer:${VERSION} ${DEVICE} $PACKER_BUILDER_TYPE
