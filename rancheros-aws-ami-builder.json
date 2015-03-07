@@ -12,16 +12,16 @@
     "provisioners": [
         {
             "type": "file",
-            "source": "dist/rancheros-0.0.6.tar.gz",
-            "destination": "/home/ubuntu/rancheros-0.0.6.tar.gz"
+            "source": "dist/rancheros-0.1.1.tar.gz",
+            "destination": "/home/ubuntu/rancheros-0.1.1.tar.gz"
         },
         {
             "type": "shell",
             "inline": [
                 "cd /home/ubuntu",
-                "tar -zxvf rancheros-0.0.6.tar.gz",
-                "sudo cp artifacts/initrd /boot/initrd-0.0.6-rancheros",
-                "sudo cp artifacts/vmlinuz /boot/vmlinuz-0.0.6-rancheros"
+                "tar -zxvf rancheros-0.1.1.tar.gz",
+                "sudo cp artifacts/initrd /boot/initrd-0.1.1-rancheros",
+                "sudo cp artifacts/vmlinuz /boot/vmlinuz-0.1.1-rancheros"
             ]
         },
         {

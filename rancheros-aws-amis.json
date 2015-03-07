@@ -6,12 +6,18 @@
             "ami_regions": [
                 "us-west-1",
                 "us-west-2",
-                "us-east-1"
+                "us-east-1",
+                "eu-central-1",
+                "eu-west-1",
+                "ap-northeast-1",
+                "sa-east-1",
+                "ap-southeast-1",
+                "ap-southeast-2"
             ],
-            "source_ami": "ami-1d3adf59",
+            "source_ami": "ami-dd39dd99",
             "instance_type": "m3.medium",
             "ssh_username": "rancher",
-            "ami_name": "rancheros-0.1.1-{{timestamp}}"
+            "ami_name": "rancheros-v0.1.2-{{timestamp}}"
         }
     ],
     "provisioners": [

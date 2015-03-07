@@ -3,8 +3,8 @@
         {
             "type": "virtualbox-iso",
             "guest_os_type": "Linux_64",
-            "iso_url": "./rancheros.iso",
-            "iso_checksum": "df38cad9403f92437263ab0e18f1862a",
+            "iso_url": "https://github.com/rancherio/os/releases/download/v0.1.2/rancheros.iso",
+            "iso_checksum": "a9d7a58eb589058072f396dbb9c69710",
             "iso_checksum_type": "md5",
             "vboxmanage": [
                 ["modifyvm", "{{.Name}}", "--memory", "1024"]
@@ -26,7 +26,7 @@
     "post-processors": [
         {
             "type": "vagrant",
-            "output": "./vagrant/x86_64/prod/rancheros_{{.Provider}}.box"
+            "output": "./vagrant/x86_64/prod/rancheros_v0.1.2_{{.Provider}}.box"
         }
     ]
 }

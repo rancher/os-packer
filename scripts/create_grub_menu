@@ -8,10 +8,10 @@ fallback 1
 
 hiddenmenu
 
-title RancherOS 0.0.6
+title RancherOS 0.1.1
 root (hd0)
-kernel /boot/vmlinuz-0.0.6-rancheros rancher.cloud_init.datasources=[ec2]
-initrd /boot/initrd-0.0.6-rancheros
+kernel /boot/vmlinuz-0.1.1-rancheros rancher.cloud_init.datasources=[ec2]
+initrd /boot/initrd-0.1.1-rancheros
 
 title           Ubuntu 14.04.1 LTS, kernel 3.13.0-44-generic
 root            (hd0)
