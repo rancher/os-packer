@@ -7,7 +7,8 @@
             "iso_checksum": "a9d7a58eb589058072f396dbb9c69710",
             "iso_checksum_type": "md5",
             "vboxmanage": [
-                ["modifyvm", "{{.Name}}", "--memory", "1024"]
+                ["modifyvm", "{{.Name}}", "--memory", "1024"],
+                ["storagectl", "{{.Name}}", "--name", "SATA Controller", "--portcount", "2"]
             ],
             "boot_wait": "15s",
             "hard_drive_interface": "sata",
@@ -27,7 +28,7 @@
     "post-processors": [
         {
             "type": "vagrant",
-            "output": "./vagrant/x86_64/prod/rancheros_v0.1.2_{{.Provider}}.box"
+            "output": "./output/vagrant/x86_64/prod/rancheros_v0.1.2_{{.Provider}}.box"
         }
     ]
 }
