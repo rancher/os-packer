@@ -1,0 +1,53 @@
+{
+    "variables": {
+        "version": "0.1.2",
+        "atlas_token": "{{env `ATLAS_CLOUD_TOKEN`}}",
+        "no_release": "{{env `VAGRANT_RELEASE`}}"
+    },
+    "builders": [
+        {
+            "type": "virtualbox-iso",
+            "guest_os_type": "Linux_64",
+            "iso_url": "../rancheros.iso",
+            "iso_checksum_type": "none",
+            "vboxmanage": [
+                ["modifyvm", "{{.Name}}", "--memory", "1024"],
+                ["modifyvm", "{{.Name}}", "--nictype1", "virtio"],
+                ["modifyvm", "{{.Name}}", "--nictype2", "virtio"],
+                ["modifyvm", "{{.Name}}", "--nictype3", "virtio"],
+                ["modifyvm", "{{.Name}}", "--nictype4", "virtio"],
+                ["modifyvm", "{{.Name}}", "--nictype5", "virtio"],
+                ["modifyvm", "{{.Name}}", "--nictype6", "virtio"],
+                ["modifyvm", "{{.Name}}", "--nictype7", "virtio"],
+                ["modifyvm", "{{.Name}}", "--nictype8", "virtio"],
+                ["storagectl", "{{.Name}}", "--name", "SATA Controller", "--portcount", "2"]
+            ],
+            "boot_wait": "15s",
+            "hard_drive_interface": "sata",
+            "ssh_username": "rancher",
+            "ssh_password": "rancher",
+            "ssh_wait_timeout": "60s",
+            "guest_additions_mode": "disable"
+        }
+    ],
+    "provisioners": [
+        {
+            "type":"shell",
+            "script": "../scripts/container-install",
+            "only": ["virtualbox-iso"]
+        }
+    ],
+    "post-processors": [
+        [{
+            "type": "vagrant",
+            "output": "./output/vagrant/x86_64/prod/{{user `version`}}/rancheros_{{.Provider}}.box"
+        },
+        {
+            "type": "vagrant-cloud",
+            "box_tag": "rancherio/rancheros",
+            "access_token": "{{user `atlas_token`}}",
+            "no_release": "{{user `no_release`}}",
+            "version": "{{user `version`}}"
+        }]
+    ]
+}
