@@ -40,7 +40,11 @@
     "post-processors": [
         [{
             "type": "vagrant",
-            "output": "./output/vagrant/x86_64/prod/{{user `version`}}/rancheros_{{.Provider}}.box"
+            "output": "./output/vagrant/x86_64/prod/{{user `version`}}/rancheros_{{.Provider}}.box",
+            "include": [
+                "includes/vagrant_rancheros_guest_plugin.rb"
+            ],
+            "vagrantfile_template": "includes/vagrantfile.tpl"
         },
         {
             "type": "vagrant-cloud",
