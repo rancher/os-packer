@@ -1,0 +1,32 @@
+#/bin/bash
+
+set -x -e
+
+VERSION=v0.2.0
+
+case ${PACKER_BUILDER_TYPE} in
+    "virtualbox-iso")
+        sudo touch /opt/user_config.yml
+        sudo chown rancher:rancher /opt/user_config.yml
+        cat >/opt/user_config.yml<<EOF
+#cloud-config
+ssh_authorized_keys:
+  - ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA6NF8iallvQVp22WDkTkyrtvp9eWW6A8YVr+kz4TjGYe7gHzIw+niNltGEFHzD8+v1I2YJ6oXevct1YeS0o9HZyN1Q9qgCgzUFtdOKLv6IedplqoPkcmF0aYet2PkEDo3MlTBckFXPITAMzF8dJSIFo9D8HfdOV0IAdx4O7PtixWKn5y2hMNG0zQPyUecp4pzC6kivAIhyfHilFR61RGL+GPXQ2MWZWFYbAGjyiYJnAmCP3NOTd0jMZEnDkbUvxhMmBYSdETk1rRgm+R4LOzFUGaHqHDLKLX+FIPKcF96hrucXzcWyLbIbEgE98OHlnVYCzRdK8jlqm8tehUc9c9WhQ== vagrant insecure public key
+rancher:
+  network:
+    interfaces:
+      eth*:
+        dhcp: false
+      eth0:
+        dhcp: true
+      lo:
+        address: 127.0.0.1/8
+EOF
+        sudo system-docker run --net=host -it --privileged --entrypoint=/scripts/set-disk-partitions cloudnautique/os-installer:hacking /dev/sda
+        sudo system-docker start udev
+        sudo system-docker run --volumes-from=user-volumes --net=host -it --privileged cloudnautique/os-installer:hacking -d /dev/sda -t generic -c /opt/user_config.yml
+        ;;
+    *)
+        exit 1
+        ;;
+esac

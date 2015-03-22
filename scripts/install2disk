@@ -2,7 +2,7 @@
 
 set -e -x
 
-VERSION=v0.1.2
+VERSION=v0.2.1
 
 case ${PACKER_BUILDER_TYPE} in
     "virtualbox-iso")

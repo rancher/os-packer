@@ -12,21 +12,21 @@
     "provisioners": [
         {
             "type": "file",
-            "source": "dist/rancheros-0.1.1.tar.gz",
-            "destination": "/home/ubuntu/rancheros-0.1.1.tar.gz"
+            "source": "../dist/rancheros-0.2.0.tar.gz",
+            "destination": "/home/ubuntu/rancheros-0.2.0.tar.gz"
         },
         {
             "type": "shell",
             "inline": [
                 "cd /home/ubuntu",
-                "tar -zxvf rancheros-0.1.1.tar.gz",
-                "sudo cp artifacts/initrd /boot/initrd-0.1.1-rancheros",
-                "sudo cp artifacts/vmlinuz /boot/vmlinuz-0.1.1-rancheros"
+                "tar -zxvf rancheros-0.2.0.tar.gz",
+                "sudo cp artifacts/initrd /boot/initrd-0.2.0-rancheros",
+                "sudo cp artifacts/vmlinuz /boot/vmlinuz-0.2.0-rancheros"
             ]
         },
         {
             "type": "shell",
-            "script": "scripts/create_grub_menu",
+            "script": "../scripts/create_grub_menu",
             "execute_command": "sudo {{ .Path }}"
         }
     ]
