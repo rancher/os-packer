@@ -1,4 +1,3 @@
-require_relative "vagrant_rancheros_guest_plugin.rb"
 Vagrant.configure(2) do |config|
     config.ssh.username = "rancher"
  

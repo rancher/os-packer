@@ -1,4 +1,7 @@
 {
+    "variables": {
+        "version": "{{env `RANCHEROS_VERSION`}}"
+    },
     "builders": [
         {
             "type": "amazon-ebs",
@@ -6,16 +9,16 @@
             "ami_regions": [
                 "us-west-1"
             ],
-            "source_ami": "ami-dd39dd99",
+            "source_ami": "ami-0757b143",
             "instance_type": "m3.medium",
             "ssh_username": "rancher",
-            "ami_name": "rancheros-0.1.2-test-{{timestamp}}"
+            "ami_name": "rancheros-{{user `version`}}-test-{{timestamp}}"
         }
     ],
     "provisioners": [
         {
             "type": "shell",
-            "script": "./scripts/install2disk"
+            "script": "../scripts/install2disk"
         }
     ]
 }
