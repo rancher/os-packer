@@ -1,6 +1,7 @@
 {
     "variables": {
-        "version": "0.1.9",
+        "version": "{{env `RANCHEROS_VERSION`}}",
+        "box_build": "{{env `VAGRANT_BOXBUILD`}}",
         "atlas_token": "{{env `ATLAS_CLOUD_TOKEN`}}",
         "no_release": "{{env `VAGRANT_RELEASE`}}"
     },
@@ -47,10 +48,10 @@
         },
         {
             "type": "vagrant-cloud",
-            "box_tag": "rancherio/rancheros",
+            "box_tag": "cloudnautique/rancheros",
             "access_token": "{{user `atlas_token`}}",
             "no_release": "{{user `no_release`}}",
-            "version": "{{user `version`}}"
+            "version": "{{user `version`}}.{{user `box_build`}}"
         }]
     ]
 }
