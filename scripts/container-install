@@ -2,7 +2,7 @@
 
 set -x -e
 
-VERSION=v0.2.0
+VERSION=v0.3.0-rc1
 
 case ${PACKER_BUILDER_TYPE} in
     "virtualbox-iso")
@@ -23,8 +23,13 @@ rancher:
         address: 127.0.0.1/8
 EOF
         sudo system-docker run --net=host -it --privileged --entrypoint=/scripts/set-disk-partitions cloudnautique/os-installer:hacking /dev/sda
-        sudo system-docker start udev
         sudo system-docker run --volumes-from=user-volumes --net=host -it --privileged cloudnautique/os-installer:hacking -d /dev/sda -t generic -c /opt/user_config.yml
+        ;;
+    "amazon-ebs")
+        sudo system-docker run --volumes-from=user-volumes --net=host -it --privileged cloudnautique/os-installer:hacking -d /dev/xvda -t amazon-ebs
+        ;;
+    "googlecompute")
+        sudo system-docker run --volumes-from=user-volumes --net=host -it --privileged cloudnautique/os-installer:hacking -d /dev/sda -t googlecompute
         ;;
     *)
         exit 1

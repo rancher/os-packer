@@ -1,18 +1,32 @@
 {
     "variables": {
-        "version": "{{env `RANCHEROS_VERSION`}}"
+        "version": "{{env `RANCHEROS_VERSION`}}",
+        "build": "{{env `AWS_IMAGE_BUILD_NUMBER`}}",
     },
     "builders": [
         {
             "type": "amazon-ebs",
+            "name": "amazon-ebs-pv",
             "region": "us-west-1",
             "ami_regions": [
                 "us-west-1"
             ],
-            "source_ami": "ami-0757b143",
+            "source_ami": "ami-897794cd",
             "instance_type": "m3.medium",
             "ssh_username": "rancher",
-            "ami_name": "rancheros-{{user `version`}}-test-{{timestamp}}"
+            "ami_name": "rancheros-{{user `version`}}-pv-test-{{user `build`}}"
+        },
+        {
+            "type": "amazon-ebs",
+            "name": "amazon-ebs-hvm",
+            "region": "us-west-1",
+            "ami_regions": [
+                "us-west-1"
+            ],
+            "source_ami": "ami-877794c3",
+            "instance_type": "m3.medium",
+            "ssh_username": "rancher",
+            "ami_name": "rancheros-{{user `version`}}-hvm-test-{{user `build`}}"
         }
     ],
     "provisioners": [

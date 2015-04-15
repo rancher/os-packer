@@ -1,33 +1,41 @@
 {
+    "variables": {
+        "container": "{{ env `BOOTSTRAP_CONTAINER` }}",
+    },
     "builders": [
         {
             "type": "amazon-ebs",
+            "name": "builder-pv",
             "region": "us-west-1",
             "source_ami": "ami-709d8635",
             "instance_type": "t1.micro",
             "ssh_username": "ubuntu",
-            "ami_name": "packer-based-rancher-os-builder {{timestamp}}"
+            "ami_name": "packer-based-rancher-os-pv-builder {{timestamp}}"
+        },
+        {
+            "type": "amazon-ebs",
+            "name": "builder-hvm",
+            "region": "us-west-1",
+            "source_ami": "ami-d36a8b97",
+            "instance_type": "t2.micro",
+            "ssh_username": "ubuntu",
+            "ami_name": "packer-based-rancher-os-hvm-builder {{timestamp}}"
         }
     ],
     "provisioners": [
         {
-            "type": "file",
-            "source": "../dist/rancheros-0.2.0.tar.gz",
-            "destination": "/home/ubuntu/rancheros-0.2.0.tar.gz"
-        },
-        {
             "type": "shell",
             "inline": [
-                "cd /home/ubuntu",
-                "tar -zxvf rancheros-0.2.0.tar.gz",
-                "sudo cp artifacts/initrd /boot/initrd-0.2.0-rancheros",
-                "sudo cp artifacts/vmlinuz /boot/vmlinuz-0.2.0-rancheros"
+                "apt-get update && apt-get install -y curl",
+                "curl -o /tmp/docker-install.sh -sSL https://get.docker.com",
+                "chmod +x /tmp/docker-install.sh && /tmp/docker-install.sh"
             ]
         },
         {
             "type": "shell",
-            "script": "../scripts/create_grub_menu",
-            "execute_command": "sudo {{ .Path }}"
+            "inline": [
+                "sudo docker run -it --privileged {{ user `container` }} -d /dev/xvda -t bootstrap"
+            ]
         }
     ]
 }

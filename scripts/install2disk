@@ -2,7 +2,7 @@
 
 set -e -x
 
-VERSION=v0.2.1
+VERSION=v0.3.0-rc2
 
 case ${PACKER_BUILDER_TYPE} in
     "virtualbox-iso")
@@ -19,11 +19,36 @@ rancher:
         dhcp: true
       lo:
         address: 127.0.0.1/8
+  services:
+    ubuntu-console: true
 EOF
         sudo /usr/sbin/rancheros-install -d /dev/sda -f -v ${VERSION} -t generic -c ./vagrant.yml
         ;;
     "amazon-ebs")
-        sudo /usr/sbin/rancheros-install -d /dev/xvda -f -v ${VERSION} -t amazon-ebs 
+        cat >cloud-config.yml<<EOF
+#cloud-config
+rancher:
+  debug: true
+  services:
+    ubuntu-console: true
+  cloud_init:
+    datasources:
+      - ec2
+EOF
+        sudo /usr/sbin/rancheros-install -d /dev/xvda -f -v ${VERSION} -t $PACKER_BUILD_NAME -c ./cloud-config.yml
+        ;;
+    "googlecompute")
+        cat >cloud-config.yml<<EOF
+#cloud-config
+rancher:
+  debug: true
+  services:
+    ubuntu-console: true
+  cloud_init:
+    datasources:
+      - gce
+EOF
+        sudo /usr/sbin/rancheros-install -d /dev/sda -f -v ${VERSION} -t $PACKER_BUILDER_TYPE -c ./cloud-config.yml
         ;;
     *)
         echo "Unknown type" 1>&2

@@ -1,0 +1,24 @@
+{
+    "variables": {
+        "version": "{{env `RANCHEROS_VERSION`}}",
+        "account_file": "{{ env `GCE_ACCOUNT_FILE`}}",
+        "build": "{{ env `GCE_BUILD_NUMBER`}}"
+    },
+    "builders": [
+        {
+            "type": "googlecompute",
+            "account_file": "{{user `account_file`}}",
+            "project_id": "rancher-dev",
+            "source_image": "rancheros-v3-1-builder",
+            "zone": "us-central1-f",
+            "image_name": "rancheros-{{ user `version`}}-{{user `build`}}-img",
+            "ssh_username": "rancher"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "script": "../scripts/install2disk"
+        }
+    ]
+}
