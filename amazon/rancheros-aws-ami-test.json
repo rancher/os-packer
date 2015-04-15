@@ -1,7 +1,7 @@
 {
     "variables": {
         "version": "{{env `RANCHEROS_VERSION`}}",
-        "build": "{{env `AWS_IMAGE_BUILD_NUMBER`}}",
+        "build": "{{env `AWS_IMAGE_BUILD_NUMBER`}}"
     },
     "builders": [
         {

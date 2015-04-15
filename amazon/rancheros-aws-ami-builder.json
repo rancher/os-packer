@@ -1,6 +1,6 @@
 {
     "variables": {
-        "container": "{{ env `BOOTSTRAP_CONTAINER` }}",
+        "container": "{{ env `BOOTSTRAP_CONTAINER` }}"
     },
     "builders": [
         {
