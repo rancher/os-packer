@@ -2,7 +2,7 @@
 
 set -e -x
 
-VERSION=v0.3.0-rc2
+VERSION=v0.3.0
 
 case ${PACKER_BUILDER_TYPE} in
     "virtualbox-iso")
@@ -19,7 +19,7 @@ rancher:
         dhcp: true
       lo:
         address: 127.0.0.1/8
-  services:
+  services_include:
     ubuntu-console: true
 EOF
         sudo /usr/sbin/rancheros-install -d /dev/sda -f -v ${VERSION} -t generic -c ./vagrant.yml
@@ -29,7 +29,7 @@ EOF
 #cloud-config
 rancher:
   debug: true
-  services:
+  services_include:
     ubuntu-console: true
   cloud_init:
     datasources:
@@ -42,7 +42,7 @@ EOF
 #cloud-config
 rancher:
   debug: true
-  services:
+  services_include:
     ubuntu-console: true
   cloud_init:
     datasources:
@@ -50,6 +50,20 @@ rancher:
 EOF
         sudo /usr/sbin/rancheros-install -d /dev/sda -f -v ${VERSION} -t $PACKER_BUILDER_TYPE -c ./cloud-config.yml
         ;;
+    "qemu")
+        cat >cloud-config.yml<<EOF
+#cloud-config
+rancher:
+  debug: true
+  services_include:
+    ubuntu-console: true
+  cloud_init:
+    datasources:
+      - gce
+EOF
+        sudo /usr/sbin/rancheros-install -d /dev/sda -f -v ${VERSION} -t generic -c ./cloud-config.yml
+        ;;
+
     *)
         echo "Unknown type" 1>&2
         exit 1
