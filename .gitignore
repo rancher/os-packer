@@ -1,3 +1,6 @@
 rancheros.iso
 output
 dist/
+account.json
+output-qemu
+packer_cache

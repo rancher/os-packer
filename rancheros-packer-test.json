@@ -1,0 +1,96 @@
+{
+    "variables": {
+        "version": "{{env `RANCHEROS_VERSION`}}",
+        "box_build": "{{env `VAGRANT_BOXBUILD`}}",
+        "atlas_token": "{{env `ATLAS_CLOUD_TOKEN`}}",
+        "no_release": "{{env `VAGRANT_RELEASE`}}",
+        "account_file": "{{ env `GCE_ACCOUNT_FILE`}}",
+        "builder_image": "{{ env `GCE_BUILD_IMAGE`}}",
+        "build": "{{ env `GCE_BUILD_NUMBER`}}"
+    },
+    "builders": [
+        {
+         "type": "qemu",
+         "name": "qemu",
+         "iso_url": "../rancheros.iso",
+         "iso_checksum_type": "none",
+         "iso_interface": "sata",
+         "ssh_wait_timeout": "20s",
+         "disk_size": 10000,
+         "format": "raw",
+         "headless": false,
+         "ssh_host_port_min": 2225,
+         "ssh_host_port_max": 2229,
+         "ssh_username": "rancher",
+         "ssh_password": "rancher",
+         "ssh_port": 22,
+         "net_device": "virtio-net",
+         "disk_interface": "scsi",
+         "qemuargs": [
+        [ "-m", "1024M" ]
+         ]
+        },
+        {
+            "type": "googlecompute",
+            "account_file": "{{user `account_file`}}",
+            "project_id": "rancher-dev",
+            "source_image": "{{ user `builder_image`}}",
+            "zone": "us-central1-f",
+            "image_name": "rancheros-{{ user `version`}}-{{user `build`}}-img",
+            "ssh_username": "rancher",
+            "ssh_timeout": "10m"
+        },
+        {
+            "type": "virtualbox-iso",
+            "guest_os_type": "Linux_64",
+            "iso_url": "../rancheros.iso",
+            "iso_checksum_type": "none",
+            "iso_interface": "sata",
+            "vboxmanage": [
+                ["modifyvm", "{{.Name}}", "--memory", "1024"],
+                ["modifyvm", "{{.Name}}", "--nictype1", "virtio"],
+                ["modifyvm", "{{.Name}}", "--nictype2", "virtio"],
+                ["modifyvm", "{{.Name}}", "--nictype3", "virtio"],
+                ["modifyvm", "{{.Name}}", "--nictype4", "virtio"],
+                ["modifyvm", "{{.Name}}", "--nictype5", "virtio"],
+                ["modifyvm", "{{.Name}}", "--nictype6", "virtio"],
+                ["modifyvm", "{{.Name}}", "--nictype7", "virtio"],
+                ["modifyvm", "{{.Name}}", "--nictype8", "virtio"],
+                ["storagectl", "{{.Name}}", "--name", "SATA Controller", "--portcount", "2"],
+                ["storagectl", "{{.Name}}", "--name", "IDE Controller", "--remove" ]
+            ],
+            "boot_wait": "15s",
+            "hard_drive_interface": "sata",
+            "ssh_username": "rancher",
+            "ssh_password": "rancher",
+            "ssh_wait_timeout": "60s",
+            "guest_additions_mode": "disable"
+        }
+    ],
+    "provisioners": [
+        {
+            "type":"shell",
+            "script": "./scripts/container-install",
+            "only": [
+              "virtualbox-iso",
+              "qemu"
+            ]
+        }
+    ],
+    "post-processors": [
+        {
+            "type": "vagrant",
+            "only": ["virtualbox-iso"]
+            "output": "./output/vagrant/x86_64/alpha/{{user `version`}}/rancheros_{{.Provider}}.box",
+            "vagrantfile_template": "includes/vagrantfile.tpl"
+        }
+        },
+        {
+            "type": "vagrant-cloud",
+            "box_tag": "cloudnautique/rancheros",
+            "access_token": "{{user `atlas_token`}}",
+            "no_release": "{{user `no_release`}}",
+            "version": "{{user `version`}}.{{user `box_build`}}"
+        }]
+    ]
+}
