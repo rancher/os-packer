@@ -3,9 +3,41 @@
         "version": "{{env `RANCHEROS_VERSION`}}",
         "atlas_token": "{{env `ATLAS_CLOUD_TOKEN`}}",
         "iso_checksum": "{{env `RANCHEROS_MD5_ISO_CHECKSUM`}}",
-        "no_release": "{{env `VAGRANT_RELEASE`}}"
+        "no_release": "{{env `VAGRANT_RELEASE`}}",
+        "account": "{{env `GCE_ACCOUNT_FILE`}}",
+        "installer_image": "{{ env `GCE_INSTALLER_IMAGE`}}",
+        "build": "1"
     },
     "builders": [
+        {
+         "type": "qemu",
+         "name": "qemu",
+         "iso_url": "https://github.com/rancherio/os/releases/download/v0.3.0/rancheros.iso",
+         "iso_checksum": "be4033bce16f38512a6fd743022e6ab1",
+         "iso_checksum_type": "md5",
+         "ssh_wait_timeout": "20s",
+         "disk_size": 10000,
+         "format": "raw",
+         "headless": false,
+         "ssh_host_port_min": 2225,
+         "ssh_host_port_max": 2229,
+         "ssh_username": "rancher",
+         "ssh_password": "rancher",
+         "ssh_port": 22,
+         "net_device": "virtio-net",
+         "disk_interface": "scsi",
+         "qemuargs": [
+        [ "-m", "1024M" ]
+         ]
+        },
+        {
+            "type": "googlecompute",
+            "account_file": "{{ user `account` }}",
+            "project_id": "rancher-dev",
+            "source_image": "ubuntu-1410-utopic-v20150318c",
+            "zone": "us-central1-f",
+            "image_name": "rancheros-v{{ user `version`}}-{{user `build`}}-builder"
+        },
         {
             "type": "virtualbox-iso",
             "guest_os_type": "Linux_64",
@@ -38,17 +70,38 @@
         {
             "type":"shell",
             "script": "./scripts/install2disk",
-            "only": ["virtualbox-iso"]
+            "only": [
+              "virtualbox-iso",
+              "qemu"
+            ]
+        },
+        {
+            "type": "shell",
+            "only": ["googlecompute"]
+            "inline": [
+                "apt-get update && apt-get install -y curl",
+                "curl -o /tmp/docker-install.sh -sSL https://get.docker.com",
+                "chmod +x /tmp/docker-install.sh && /tmp/docker-install.sh"
+            ]
+        },
+        {
+            "type": "shell",
+            "only": ["googlecompute"]
+            "inline": [
+                "sudo docker run -it --privileged {{ user `installer_image` }} -d /dev/sda -t bootstrap"
+            ]
         }
     ],
     "post-processors": [
         [{
             "type": "vagrant",
+            "only": ["virtualbox-iso"]
             "output": "./output/vagrant/x86_64/prod/{{user `version`}}/rancheros_{{.Provider}}.box",
             "vagrantfile_template": "includes/vagrantfile.tpl"
         },
         {
             "type": "vagrant-cloud",
+            "only": ["virtualbox-iso"]
             "box_tag": "rancherio/rancheros",
             "access_token": "{{user `atlas_token`}}",
             "no_release": "{{user `no_release`}}",
