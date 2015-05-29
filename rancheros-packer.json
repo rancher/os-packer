@@ -37,7 +37,7 @@
     "provisioners": [
         {
             "type":"shell",
-            "script": "../scripts/install2disk",
+            "script": "./scripts/install2disk",
             "only": ["virtualbox-iso"]
         }
     ],
