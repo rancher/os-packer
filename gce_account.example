@@ -1,0 +1,2 @@
+export GCE_ACCOUNT_FILE=file_example
+export GCE_INSTALLER_IMAGE=image_example

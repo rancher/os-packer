@@ -1,6 +1,11 @@
 rancheros.iso
 output
+output-qemu
+builds
 dist/
 account.json
-output-qemu
 packer_cache
+makeenv
+authorized_key
+atlas_cloud_token
+gce_account
