@@ -1,4 +1,10 @@
 rancheros.iso
+output-qemu
 output
 dist/
 account.json
+packer_cache
+net
+authorized_key
+atlas_cloud_token
+gce_account
