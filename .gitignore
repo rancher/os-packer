@@ -1,11 +1,9 @@
 rancheros.iso
 output-qemu
 output
-builds
 dist/
 account.json
 packer_cache
-makeenv
 net
 authorized_key
 atlas_cloud_token
