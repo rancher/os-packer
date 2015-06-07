@@ -12,6 +12,7 @@ include authorized_key
 include atlas_cloud_token
 include gce_account
 include env_vars
+include net
 
 PACKER_JSON := rancheros-packer.json
 PACKER_JSON_TEST := rancheros-packer-test.json
@@ -32,21 +33,21 @@ help:
 	@echo "   1. make qemu       - build the qemu packer image"
 	@echo "   2. make clean  - cleanup"
 
+meta: qemu vagrant
+
 qemu:
 	@echo "qemu"
+	@mkdir -p output
 	@echo "$(CMD_PRE) packer build --only=qemu $(PACKER_JSON)" |bash
 
 qemu-debug:
 	@echo "qemu debug"
+	@mkdir output
 	@echo "$(CMD_PRE) packer build -debug --only=qemu $(PACKER_JSON_TEST)" |bash
 
 vagrant:
 	@echo "vbox"
 	@echo "$(CMD_PRE) packer build --only=vagrant $(PACKER_JSON)" |bash
-
-vagrant-cloud:
-	@echo "vbox"
-	@echo "$(CMD_PRE) packer build --only=vagrant-cloud $(PACKER_JSON)" |bash
 
 vbox:
 	@echo "vbox"

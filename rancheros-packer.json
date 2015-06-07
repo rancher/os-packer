@@ -8,7 +8,14 @@
         "no_release": "{{env `VAGRANT_RELEASE`}}",
         "gce_account": "{{env `GCE_ACCOUNT_FILE`}}",
         "installer_image": "{{ env `GCE_INSTALLER_IMAGE`}}",
-        "build": "1"
+        "build": "1",
+        "RANCHEROS_NET_NAMESERVER1": "{{ env `RANCHEROS_NET_NAMESERVER1` }}",
+        "RANCHEROS_NET_NAMESERVER2": "{{ env `RANCHEROS_NET_NAMESERVER2` }}",
+        "RANCHEROS_NET_DOMAIN_1": "{{ env `RANCHEROS_NET_DOMAIN_1` }}",
+        "RANCHEROS_NET_DOMAIN_2": "{{ env `RANCHEROS_NET_DOMAIN_2` }}",
+        "RANCHEROS_NET_ETH1_ADDRESS": "{{ env `RANCHEROS_NET_ETH1_ADDRESS` }}",
+        "RANCHEROS_NET_ETH1_GATEWAY": "{{ env `RANCHEROS_NET_ETH1_GATEWAY` }}",
+        "RANCHEROS_NET_ETH1_MTU": "{{ env `RANCHEROS_NET_ETH1_MTU` }}"
     },
     "builders": [
         {
@@ -90,34 +97,7 @@
         },
         {
             "type": "virtualbox-iso",
-            "name": "vagrant-cloud",
-            "guest_os_type": "Linux_64",
-            "iso_url": "https://github.com/rancherio/os/releases/download/v{{user `version`}}/rancheros.iso",
-            "iso_checksum": "{{user `iso_checksum`}}",
-            "iso_checksum_type": "md5",
-            "iso_interface": "sata",
-            "vboxmanage": [
-                ["modifyvm", "{{.Name}}", "--memory", "1024"],
-                ["modifyvm", "{{.Name}}", "--nictype1", "virtio"],
-                ["modifyvm", "{{.Name}}", "--nictype2", "virtio"],
-                ["modifyvm", "{{.Name}}", "--nictype3", "virtio"],
-                ["modifyvm", "{{.Name}}", "--nictype4", "virtio"],
-                ["modifyvm", "{{.Name}}", "--nictype5", "virtio"],
-                ["modifyvm", "{{.Name}}", "--nictype6", "virtio"],
-                ["modifyvm", "{{.Name}}", "--nictype7", "virtio"],
-                ["modifyvm", "{{.Name}}", "--nictype8", "virtio"],
-                ["storagectl", "{{.Name}}", "--name", "SATA Controller", "--portcount", "2"],
-                ["storagectl", "{{.Name}}", "--name", "IDE Controller", "--remove" ]
-            ],
-            "boot_wait": "15s",
-            "hard_drive_interface": "sata",
-            "ssh_username": "rancher",
-            "ssh_password": "rancher",
-            "ssh_wait_timeout": "60s",
-            "guest_additions_mode": "disable"
-        },
-        {
-            "type": "virtualbox-iso",
+            "name": "virtualbox-iso",
             "guest_os_type": "Linux_64",
             "iso_url": "https://github.com/rancherio/os/releases/download/v{{user `version`}}/rancheros.iso",
             "iso_checksum": "{{user `iso_checksum`}}",
@@ -150,12 +130,18 @@
             "script": "./scripts/install2disk",
             "environment_vars": [
             "RANCHEROS_VERSION={{user `version`}}",
-            "SSH_AUTHORIZED_KEY={{user `sshkey`}}"
+            "SSH_AUTHORIZED_KEY={{user `sshkey`}}",
+            "RANCHEROS_NET_NAMESERVER1={{user `RANCHEROS_NET_NAMESERVER1`}}",
+            "RANCHEROS_NET_NAMESERVER2={{ user `RANCHEROS_NET_NAMESERVER2` }}",
+            "RANCHEROS_NET_DOMAIN_1={{ user `RANCHEROS_NET_DOMAIN_1` }}",
+            "RANCHEROS_NET_DOMAIN_2={{ user `RANCHEROS_NET_DOMAIN_2` }}",
+            "RANCHEROS_NET_ETH1_ADDRESS={{ user `RANCHEROS_NET_ETH1_ADDRESS` }}",
+            "RANCHEROS_NET_ETH1_GATEWAY={{ user `RANCHEROS_NET_ETH1_GATEWAY` }}",
+            "RANCHEROS_NET_ETH1_MTU={{ user `RANCHEROS_NET_ETH1_MTU` }}"
             ],
             "only": [
               "virtualbox-iso",
               "vagrant",
-              "vagrant-cloud",
               "qemu"
             ]
         },
@@ -198,7 +184,7 @@
         },
         {
             "type": "vagrant-cloud",
-            "only": ["vagrant-cloud"],
+            "only": ["vagrant"],
             "box_tag": "rancherio/rancheros",
             "access_token": "{{user `atlas_token`}}",
             "no_release": "{{user `no_release`}}",
