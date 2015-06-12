@@ -5,7 +5,7 @@ set -e -x
 VERSION=v0.3.0
 
 case ${PACKER_BUILDER_TYPE} in
-    "virtualbox-iso")
+    "virtualbox-iso" | "parallels-iso" )
         cat >vagrant.yml<<EOF
 #cloud-config
 ssh_authorized_keys:

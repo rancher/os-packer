@@ -30,13 +30,27 @@
             "ssh_password": "rancher",
             "ssh_wait_timeout": "60s",
             "guest_additions_mode": "disable"
+        },
+        {
+            "type": "parallels-iso",
+            "guest_os_type":"linux-2.6",
+            "iso_url": "../rancheros.iso",
+            "iso_checksum_type": "none",
+            "boot_wait": "15s",
+            "ssh_username": "rancher",
+            "ssh_password": "rancher",
+            "ssh_wait_timeout": "60s",
+            "prlctl": [
+                ["set", "{{.Name}}", "--memsize", "1024"]
+            ],
+            "parallels_tools_mode": "disable"
         }
     ],
     "provisioners": [
         {
             "type":"shell",
             "script": "../scripts/install2disk",
-            "only": ["virtualbox-iso"]
+            "only": ["parallels-iso", "virtualbox-iso"]
         }
     ],
     "post-processors": [
