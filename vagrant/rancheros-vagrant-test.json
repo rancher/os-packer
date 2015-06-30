@@ -9,8 +9,9 @@
         {
             "type": "virtualbox-iso",
             "guest_os_type": "Linux_64",
-            "iso_url": "../rancheros.iso",
-            "iso_checksum_type": "none",
+            "iso_url": "https://github.com/rancherio/os/releases/download/v{{user `version`}}/rancheros.iso",
+            "iso_checksum": "{{user `iso_checksum`}}",
+            "iso_checksum_type": "md5",
             "iso_interface": "sata",
             "vboxmanage": [
                 ["modifyvm", "{{.Name}}", "--memory", "1024"],
