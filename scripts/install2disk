@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e -x
 
-VERSION=v0.3.2-rc3
+VERSION=v0.3.2
 PACKER_BUILDER_TYPE=${PACKER_BUILDER_TYPE:?"PACKER_BUILDER_TYPE is not set"}
 
 case ${PACKER_BUILDER_TYPE} in
