@@ -40,7 +40,7 @@ rancher:
     datasources:
       - gce
 EOF
-        sudo /usr/sbin/rancheros-install -d /dev/sda -f -v ${VERSION} -t $PACKER_BUILDER_TYPE -c ./cloud-config.yml
+        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/sda -t $PACKER_BUILDER_TYPE -c $(pwd)/cloud-config.yml
         ;;
 
     "qemu")
