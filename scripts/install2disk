@@ -5,6 +5,7 @@ VERSION=v0.3.2-rc3
 PACKER_BUILDER_TYPE=${PACKER_BUILDER_TYPE:?"PACKER_BUILDER_TYPE is not set"}
 
 case ${PACKER_BUILDER_TYPE} in
+
     "virtualbox-iso")
         cat >vagrant.yml<<EOF
 #cloud-config
@@ -13,6 +14,7 @@ ssh_authorized_keys:
 EOF
         sudo /usr/sbin/rancheros-install -d /dev/sda -f -v ${VERSION} -t generic -c ./vagrant.yml
         ;;
+
     "amazon-ebs")
         cat >cloud-config.yml<<EOF
 #cloud-config
@@ -24,8 +26,9 @@ rancher:
     datasources:
       - ec2
 EOF
-        sudo /usr/sbin/rancheros-install -d /dev/xvda -f -v ${VERSION} -t $PACKER_BUILD_NAME -c ./cloud-config.yml
+        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/xvda -t $PACKER_BUILD_NAME -c $(pwd)/cloud-config.yml
         ;;
+
     "googlecompute")
         cat >cloud-config.yml<<EOF
 #cloud-config
@@ -39,6 +42,7 @@ rancher:
 EOF
         sudo /usr/sbin/rancheros-install -d /dev/sda -f -v ${VERSION} -t $PACKER_BUILDER_TYPE -c ./cloud-config.yml
         ;;
+
     "qemu")
         cat >cloud-config.yml<<EOF
 #cloud-config
