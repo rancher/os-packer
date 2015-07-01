@@ -2,7 +2,7 @@
     "variables": {
         "version": "{{env `RANCHEROS_VERSION`}}",
         "account": "{{env `GCE_ACCOUNT_FILE`}}",
-        "installer_image": "{{ env `GCE_INSTALLER_IMAGE`}}",
+        "installer_image": "rancher/os:v0.3.2",
         "build": "1"
     },
     "builders": [
