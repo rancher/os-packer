@@ -19,7 +19,7 @@
      "net_device": "virtio-net",
      "disk_interface": "scsi",
      "qemuargs": [
-	[ "-m", "1024M" ]
+       ["-m", "1024M"]
      ]
    }
  ],
