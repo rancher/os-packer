@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e -x
 
-VERSION=v0.4.0-rc6
+VERSION=v0.4.0-rc10
 PACKER_BUILDER_TYPE=${PACKER_BUILDER_TYPE:?"PACKER_BUILDER_TYPE is not set"}
 
 case ${PACKER_BUILDER_TYPE} in
@@ -19,9 +19,6 @@ EOF
         cat >cloud-config.yml<<EOF
 #cloud-config
 rancher:
-  debug: true
-  services_include:
-    ubuntu-console: true
   cloud_init:
     datasources:
       - ec2
@@ -33,9 +30,6 @@ EOF
         cat >cloud-config.yml<<EOF
 #cloud-config
 rancher:
-  debug: true
-  services_include:
-    ubuntu-console: true
   cloud_init:
     datasources:
       - gce
@@ -47,9 +41,6 @@ EOF
         cat >cloud-config.yml<<EOF
 #cloud-config
 rancher:
-  debug: true
-  services_include:
-    ubuntu-console: true
   cloud_init:
     datasources:
       - gce
