@@ -45,7 +45,7 @@ rancher:
     datasources:
       - gce
 EOF
-        sudo /usr/sbin/rancheros-install -d /dev/sda -f -v ${VERSION} -t generic -c ./cloud-config.yml
+        sudo ros install -d /dev/sda -f -c ./cloud-config.yml --no-reboot
         ;;
 
     *)
