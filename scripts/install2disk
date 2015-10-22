@@ -19,8 +19,6 @@ EOF
         cat >cloud-config.yml<<EOF
 #cloud-config
 rancher:
-  services_include:
-    aws-ec2-resizefs: true
   cloud_init:
     datasources:
       - ec2
