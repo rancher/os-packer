@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e -x
 
-VERSION=v0.4.0
+VERSION=v0.4.1-dev
 PACKER_BUILDER_TYPE=${PACKER_BUILDER_TYPE:?"PACKER_BUILDER_TYPE is not set"}
 
 case $PACKER_BUILD_NAME in
@@ -11,6 +11,7 @@ case $PACKER_BUILD_NAME in
 #cloud-config
 rancher:
   services_include:
+    aws-ec2-resizefs: true
     amazon-ecs-agent: true
   cloud_init:
     datasources:
@@ -37,6 +38,8 @@ EOF
         cat >cloud-config.yml<<EOF
 #cloud-config
 rancher:
+  services_include:
+    aws-ec2-resizefs: true
   cloud_init:
     datasources:
       - ec2
