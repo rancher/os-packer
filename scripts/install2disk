@@ -4,6 +4,24 @@ set -e -x
 VERSION=v0.4.0
 PACKER_BUILDER_TYPE=${PACKER_BUILDER_TYPE:?"PACKER_BUILDER_TYPE is not set"}
 
+case $PACKER_BUILD_NAME in
+
+    "amazon-ebs-ecs")
+        cat >cloud-config.yml<<EOF
+#cloud-config
+rancher:
+  services_include:
+    amazon-ecs-agent: true
+  cloud_init:
+    datasources:
+      - ec2
+EOF
+        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/xvda -t amazon-ebs-hvm -c $(pwd)/cloud-config.yml
+        exit 0
+        ;;
+
+esac
+
 case ${PACKER_BUILDER_TYPE} in
 
     "virtualbox-iso")
