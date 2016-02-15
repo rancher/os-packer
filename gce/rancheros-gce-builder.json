@@ -1,8 +1,8 @@
 {
     "variables": {
-        "version": "v0.4.3-rc4",
+        "version": "v0.4.3",
         "account": "{{env `GCE_ACCOUNT_FILE`}}",
-        "installer_image": "rancher/os:v0.4.3-rc4",
+        "installer_image": "rancher/os:v0.4.3",
         "build": "1"
     },
     "builders": [
