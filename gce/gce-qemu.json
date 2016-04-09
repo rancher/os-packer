@@ -4,8 +4,8 @@
    {
      "type": "qemu",
      "name": "qemu-googlecompute",
-     "iso_url": "https://github.com/rancherio/os/releases/download/v0.4.4-rc1/rancheros.iso",
-     "iso_checksum": "c12d6acef3d61eb913bfe3403db64195",
+     "iso_url": "https://github.com/rancherio/os/releases/download/v0.4.4-rc3/rancheros.iso",
+     "iso_checksum": "6e2b74fddba0ab8410a826afde8c4d42",
      "iso_checksum_type": "md5",
      "ssh_wait_timeout": "360s",
      "disk_size": 10000,
