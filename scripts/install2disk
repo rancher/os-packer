@@ -10,7 +10,10 @@ case $PACKER_BUILD_NAME in
         cat >cloud-config.yml<<EOF
 #cloud-config
 rancher:
+  environment:
+    RESIZE_DEV: /dev/xvda
   services_include:
+    resize-fs: true
     amazon-ecs-agent: true
   cloud_init:
     datasources:
@@ -37,6 +40,10 @@ EOF
         cat >cloud-config.yml<<EOF
 #cloud-config
 rancher:
+  environment:
+    RESIZE_DEV: /dev/xvda
+  services_include:
+    resize-fs: true
   cloud_init:
     datasources:
       - ec2
