@@ -6,18 +6,6 @@
     "builders": [
         {
             "type": "amazon-ebs",
-            "name": "amazon-ebs-pv",
-            "region": "us-west-1",
-            "ami_regions": [
-                "us-west-1"
-            ],
-            "source_ami": "ami-897794cd",
-            "instance_type": "m3.medium",
-            "ssh_username": "rancher",
-            "ami_name": "rancheros-{{user `version`}}-pv-test-{{user `build`}}"
-        },
-        {
-            "type": "amazon-ebs",
             "name": "amazon-ebs-hvm",
             "region": "us-west-1",
             "ami_regions": [
