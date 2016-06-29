@@ -9,7 +9,7 @@
             "name": "amazon-ebs-hvm",
             "region": "us-west-1",
             "ami_regions": [
-                "us-west-1"
+                "eu-west-1"
             ],
             "source_ami": "ami-877794c3",
             "instance_type": "m3.medium",
