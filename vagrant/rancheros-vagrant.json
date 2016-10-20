@@ -3,7 +3,7 @@
         "version": "{{env `RANCHEROS_VERSION`}}",
         "atlas_token": "{{env `ATLAS_CLOUD_TOKEN`}}",
         "iso_checksum": "{{env `RANCHEROS_MD5_ISO_CHECKSUM`}}",
-        "no_release": "{{env `VAGRANT_RELEASE`}}"
+        "no_release": "{{env `VAGRANT_NO_RELEASE`}}"
     },
     "builders": [
         {

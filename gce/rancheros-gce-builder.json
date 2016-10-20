@@ -1,8 +1,8 @@
 {
     "variables": {
-        "version": "{{env `RANCHEROS_VERSION`}}",
+        "version": "v0.4.5",
         "account": "{{env `GCE_ACCOUNT_FILE`}}",
-        "installer_image": "{{ env `GCE_INSTALLER_IMAGE`}}",
+        "installer_image": "rancher/os:v0.4.5",
         "build": "1"
     },
     "builders": [
@@ -12,7 +12,7 @@
             "project_id": "rancher-dev",
             "source_image": "ubuntu-1410-utopic-v20150318c",
             "zone": "us-central1-f",
-            "image_name": "rancheros-v{{ user `version`}}-{{user `build`}}-builder"
+            "image_name": "rancheros-{{ user `version`}}-{{user `build`}}-builder"
         }
     ],
     "provisioners": [

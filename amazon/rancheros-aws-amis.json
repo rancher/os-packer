@@ -6,25 +6,6 @@
     "builders": [
         {
             "type": "amazon-ebs",
-            "name": "amazon-ebs-pv",
-            "region": "us-west-1",
-            "ami_regions": [
-                "us-west-1",
-                "us-west-2",
-                "us-east-1",
-                "eu-west-1",
-                "ap-northeast-1",
-                "sa-east-1",
-                "ap-southeast-1",
-                "ap-southeast-2"
-            ],
-            "source_ami": "ami-897794cd",
-            "instance_type": "m3.medium",
-            "ssh_username": "rancher",
-            "ami_name": "rancheros-{{user `version`}}-{{user `build`}}"
-        },
-        {
-            "type": "amazon-ebs",
             "name": "amazon-ebs-hvm",
             "region": "us-west-1",
             "ami_regions": [
@@ -32,20 +13,48 @@
                 "us-west-2",
                 "us-east-1",
                 "eu-west-1",
+                "eu-central-1",
                 "ap-northeast-1",
+                "ap-northeast-2",
                 "sa-east-1",
                 "ap-southeast-1",
-                "ap-southeast-2"
+                "ap-southeast-2",
+                "ap-south-1"
             ],
             "source_ami": "ami-877794c3",
             "instance_type": "m3.medium",
             "ssh_username": "rancher",
             "ami_name": "rancheros-{{user `version`}}-hvm-{{user `build`}}"
+        },
+        {
+            "type": "amazon-ebs",
+            "name": "amazon-ebs-ecs",
+            "region": "us-west-1",
+            "ami_regions": [
+                "us-west-1",
+                "us-west-2",
+                "us-east-1",
+                "eu-west-1",
+                "eu-central-1",
+                "ap-northeast-1",
+                "ap-northeast-2",
+                "sa-east-1",
+                "ap-southeast-1",
+                "ap-southeast-2",
+                "ap-south-1"
+            ],
+            "source_ami": "ami-877794c3",
+            "instance_type": "m3.medium",
+            "ssh_username": "rancher",
+            "ami_name": "rancheros-{{user `version`}}-{{user `build`}}-amazon-ecs-optimized"
         }
     ],
     "provisioners": [
         {
             "type": "shell",
+            "environment_vars": [
+                "VERSION={{user `version`}}"
+            ],
             "script": "../scripts/install2disk"
         }
     ]
