@@ -32,6 +32,9 @@
     "provisioners": [
         {
             "type": "shell",
+            "environment_vars": [
+                "VERSION={{user `version`}}"
+            ],
             "script": "../scripts/install2disk"
         }
     ]

@@ -18,7 +18,8 @@
                 "ap-northeast-2",
                 "sa-east-1",
                 "ap-southeast-1",
-                "ap-southeast-2"
+                "ap-southeast-2",
+                "ap-south-1"
             ],
             "source_ami": "ami-877794c3",
             "instance_type": "m3.medium",
@@ -39,7 +40,8 @@
                 "ap-northeast-2",
                 "sa-east-1",
                 "ap-southeast-1",
-                "ap-southeast-2"
+                "ap-southeast-2",
+                "ap-south-1"
             ],
             "source_ami": "ami-877794c3",
             "instance_type": "m3.medium",
@@ -50,6 +52,9 @@
     "provisioners": [
         {
             "type": "shell",
+            "environment_vars": [
+                "VERSION={{user `version`}}"
+            ],
             "script": "../scripts/install2disk"
         }
     ]
