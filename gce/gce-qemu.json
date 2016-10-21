@@ -4,14 +4,14 @@
    {
      "type": "qemu",
      "name": "qemu-googlecompute",
-     "iso_url": "https://github.com/rancherio/os/releases/download/v0.4.5/rancheros.iso",
-     "iso_checksum": "b2fbb5edc5f97aa16d22fe2ca3a23028",
+     "iso_url": "https://github.com/rancherio/os/releases/download/v0.7.0/rancheros.iso",
+     "iso_checksum": "00eb6b35597ba1904e57e9bb1268eacf",
      "iso_checksum_type": "md5",
      "ssh_wait_timeout": "360s",
      "disk_size": 10000,
      "format": "raw",
-     "headless": true,
-     "accelerator": "none",
+     "headless": false,
+     "accelerator": "kvm",
      "ssh_host_port_min": 2225,
      "ssh_host_port_max": 2229,
      "ssh_username": "rancher",
@@ -19,8 +19,14 @@
      "ssh_port": 22,
      "net_device": "virtio-net",
      "disk_interface": "scsi",
+     "boot_wait": "45s",
+     "boot_command":
+     [
+        "sudo -i<enter>",
+        "echo rancher:rancher | chpasswd<enter>"
+     ],
      "qemuargs": [
-       ["-m", "1024M"], ["-nographic"], ["-display", "none"]
+       ["-m", "1400M"], ["-nographic"], ["-display", "none"]
      ]
    }
  ],
