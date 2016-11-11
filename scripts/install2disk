@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e -x
 
-VERSION=${VERSION:?"VERSION is not set"}
+VERSION=${VERSION:?"VERSION is not set YYYYHJY"}
 PACKER_BUILDER_TYPE=${PACKER_BUILDER_TYPE:?"PACKER_BUILDER_TYPE is not set"}
 
 case $PACKER_BUILD_NAME in

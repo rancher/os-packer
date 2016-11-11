@@ -1,11 +1,15 @@
 {
+ "variables": {
+     "version": "{{env `RANCHEROS_VERSION`}}",
+     "build": "{{env `AWS_IMAGE_BUILD_NUMBER`}}"
+ },
  "builders":
  [
    {
      "type": "qemu",
      "name": "qemu-googlecompute",
-     "iso_url": "https://github.com/rancherio/os/releases/download/v0.7.0/rancheros.iso",
-     "iso_checksum": "00eb6b35597ba1904e57e9bb1268eacf",
+     "iso_url": "/rancheros.iso",
+     "iso_checksum": "eb58ac4958cf66bb9c2675cd7e565419",
      "iso_checksum_type": "md5",
      "ssh_wait_timeout": "360s",
      "disk_size": 10000,
@@ -33,6 +37,9 @@
  "provisioners": [
    {
      "type":"shell",
+     "environment_vars": [
+        "VERSION={{user `version`}}"
+     ],
      "script": "../scripts/install2disk"
    }
  ]

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+cd $(dirname $0)/../gce
+
+#if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
+#    echo AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be set
+#fi
+
+PACKER_LOG=1  packer build ${FILE:-gce-qemu.json}
+
+mv output-qemu-googlecompute/packer-qemu-googlecompute disk.raw
+tar czvf rancheros-${RANCHEROS_VERSION}.tar.gz disk.raw
+mkdir -p ../dist
+mv rancheros-${RANCHEROS_VERSION}.tar.gz ../dist/
+
+echo "upload the GCE image using:"
+echo "  gsutil cp dist/rancheros-${RANCHEROS_VERSION}.tar.gz gs://ros-images/"
+
+# and then push to gce
+# gsutil cp ./rancheros-${RANCHEROS_VERSION}.tar.gz gs://ros-images/
+## gcloud compute images create rancheros-v0.7.0 —source-uri gs://ros-images/rancheos-v0.7.0
+## https://cloud.google.com/sdk/docs/quickstart-linux

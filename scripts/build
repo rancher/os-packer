@@ -1,9 +1,6 @@
 #!/bin/bash
 
-cd $(dirname $0)/../amazon
+cd $(dirname $0)
 
-if [ -z "$AWS_ACCESS_KEY_ID" ] || [ -z "$AWS_SECRET_ACCESS_KEY" ]; then
-    echo AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be set
-fi
-
-packer build ${FILE:-rancheros-aws-amis.json}
+./build-aws
+./build-gce

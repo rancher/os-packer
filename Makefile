@@ -13,3 +13,6 @@ $(TARGETS): .dapper
 .DEFAULT_GOAL := ci
 
 .PHONY: $(TARGETS)
+
+shell-bind: .dapper
+	./.dapper -m bind -s
