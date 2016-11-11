@@ -1,12 +1,25 @@
-#Packer Build Scripts for RancherOS
+# Packer Build Scripts for RancherOS
 ---
 
-#Purpose
+## Purpose
 
 These scripts are used to build RancherOS for Vagrant, Amazon and GCE.
 
-#License
-Copyright (c) 2014-2015 [Rancher Labs, Inc.](http://rancher.com)
+## Release process
+
+Once you have pushed the `rancher/os:vX.Y.Z` image to the hub,
+update the `RANCHEROS_VERSION` version in the `Dockerfile.dapper` to match.
+
+Then run `make test-build` to publish a private test version of the optimised
+and un-optimised AMI's to Amazon. Test these by making new EC2 machines.
+
+Once that's tested you can go on to publish the full set of AMI's using
+`make release`, and then the GCE image using `make gce`
+
+
+## License
+
+Copyright (c) 2014-2016 [Rancher Labs, Inc.](http://rancher.com)
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
