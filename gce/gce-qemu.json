@@ -1,7 +1,8 @@
 {
  "variables": {
      "version": "{{env `RANCHEROS_VERSION`}}",
-     "build": "{{env `AWS_IMAGE_BUILD_NUMBER`}}"
+     "build": "{{env `AWS_IMAGE_BUILD_NUMBER`}}",
+     "checksum": "{{env `ISO_CHECKSUM`}}"
  },
  "builders":
  [
@@ -9,7 +10,7 @@
      "type": "qemu",
      "name": "qemu-googlecompute",
      "iso_url": "/rancheros.iso",
-     "iso_checksum": "eb58ac4958cf66bb9c2675cd7e565419",
+     "iso_checksum": "{{user `checksum`}}",
      "iso_checksum_type": "md5",
      "ssh_wait_timeout": "360s",
      "disk_size": 10000,

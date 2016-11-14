@@ -15,7 +15,8 @@ ENV RANCHEROS_VERSION v0.7.1
 ENV AWS_IMAGE_BUILD_NUMBER 1
 
 RUN cd / \
-    && wget https://github.com/rancher/os/releases/download/${RANCHEROS_VERSION}/rancheros.iso
+    && wget https://github.com/rancher/os/releases/download/${RANCHEROS_VERSION}/rancheros.iso \
+    && wget https://github.com/rancher/os/releases/download/${RANCHEROS_VERSION}/iso-checksums.txt
 
 ENTRYPOINT ["./scripts/entry"]
 CMD ["ci"]
