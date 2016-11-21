@@ -2,12 +2,21 @@ FROM golang:1.7.1
 
 RUN go get github.com/mitchellh/packer
 
+RUN apt-get update \
+    && apt-get install -yq qemu-system-x86
+
 ENV DAPPER_SOURCE /source
 ENV DAPPER_ENV AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+ENV DAPPER_RUN_ARGS --device=/dev/kvm:/dev/kvm
+ENV DAPPER_OUTPUT ./dist
 WORKDIR ${DAPPER_SOURCE}
 
-ENV RANCHEROS_VERSION v0.7.0
+ENV RANCHEROS_VERSION v0.7.1
 ENV AWS_IMAGE_BUILD_NUMBER 1
+
+RUN cd / \
+    && wget https://github.com/rancher/os/releases/download/${RANCHEROS_VERSION}/rancheros.iso \
+    && wget https://github.com/rancher/os/releases/download/${RANCHEROS_VERSION}/iso-checksums.txt
 
 ENTRYPOINT ["./scripts/entry"]
 CMD ["ci"]
