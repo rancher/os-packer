@@ -3,10 +3,11 @@ FROM golang:1.7.1
 RUN go get github.com/mitchellh/packer
 
 RUN apt-get update \
-    && apt-get install -yq qemu-system-x86
+    && apt-get install -yq qemu-system-x86 python-pip python-yaml \
+    && pip install awscli
 
 ENV DAPPER_SOURCE /source
-ENV DAPPER_ENV AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY
+ENV DAPPER_ENV AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY RANCHEROS_VERSION
 ENV DAPPER_RUN_ARGS --device=/dev/kvm:/dev/kvm
 ENV DAPPER_OUTPUT ./dist
 WORKDIR ${DAPPER_SOURCE}
@@ -22,6 +23,7 @@ RUN cd / \
     && if [ ! -f /iso-checksums.txt ]; then \
         wget https://github.com/rancher/os/releases/download/${RANCHEROS_VERSION}/iso-checksums.txt \
     ;fi
+
 
 ENTRYPOINT ["./scripts/entry"]
 CMD ["ci"]
