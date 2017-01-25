@@ -1,0 +1,85 @@
+#!/bin/bash
+
+help() {
+	echo "Need to set:"
+	echo "	AMI: $AMI"
+	echo "	ITYPE: $ITYPE"
+	echo "	REGION: $REGION"
+	echo "	KEY: $KEY"
+	echo
+	echo "Ran $0 $@"
+}
+
+AMI="${AMI:-$1}"
+ITYPE="${ITYPE:-$2}"
+REGION="${REGION:-$3}"
+KEY="${KEY:-$4}"
+
+
+if [ "$AMI" = "" ] || [ "$ITYPE" = "" ] || [ "$REGION" = "" ] || [ "$KEY" = "" ]; then
+	help
+	exit 1
+fi
+
+KEYFILE="$(pwd)/$KEY.pem"
+if [ ! -f "$KEYFILE" ]; then
+	NEWKEY="1"
+	echo "Generating a new Keypair $KEY"
+	aws --output=text ec2 create-key-pair --key-name $KEY --region $REGION | sed 's/.*\t---/---/' | sed 's/KEY-----\t.*/KEY-----/' > "$KEYFILE"
+	chmod 600 "$KEYFILE"
+fi
+
+
+echo "starting $AMI on type $ITYPE in $REGION"
+INSTANCE=$(aws --output text  ec2 run-instances --count 1 \
+	--image-id $AMI \
+	--instance-type $ITYPE \
+	--region $REGION \
+	--key-name $KEY |  sed 's/\s/,/g' | grep INSTANCES)
+if [ "$?" != "0" ]; then
+	echo "SKIPPING this type"
+	exit
+fi
+echo "testing $AMI on type $ITYPE in $REGION"
+ID=$(echo $INSTANCE | cut -f8 -d,)
+IP=$(echo $INSTANCE | cut -f14 -d,)
+echo "== $ID at $IP"
+#echo $INSTANCE
+count=1
+while [ "$IP" == "" ]; do
+	sleep 1
+	INSTANCE=$(aws --output text ec2 describe-instances --instance-ids $ID --region $REGION | sed 's/\s/,/g' | grep INSTANCES)
+	IP=$(echo $INSTANCE | cut -f14 -d,)
+	echo "  $count == $ID at $IP"
+	count=$((1+$count))
+done
+STATE=""
+echo "Waiting for instance to be initialized"
+while [ "$STATE" != "running" ]; do
+	sleep 1
+	STATE=$(aws --output text ec2 describe-instances --instance-ids $ID --region $REGION | sed 's/\s/,/g' | grep STATE | cut -f3 -d,)
+	echo -ne "_"
+done
+while [ "$STATE" != "" ]; do
+	sleep 5
+	STATE=$(aws --output text ec2 describe-instance-status --instance-ids $ID --region $REGION | sed 's/\s/,/g' | grep initializing )
+	echo -ne "."
+done
+echo sleeping
+sleep 5
+	
+echo "### requesting uname"
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $KEYFILE rancher@$IP uname -a
+if [ "$?" != "0" ]; then
+	echo "ERROR $?"
+fi
+echo "### running test.sh"
+chmod 755 scripts/test.sh
+scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $KEYFILE scripts/test.sh rancher@$IP:~/test.sh
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $KEYFILE rancher@$IP ./test.sh
+sleep 5
+echo "### ros console list"
+ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $KEYFILE rancher@$IP sudo ros console list
+	
+echo "terminating $ID: $AMI on type $ITYPE in $REGION"
+aws --output text ec2 terminate-instances --instance-ids $ID --region $REGION

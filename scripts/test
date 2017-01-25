@@ -4,72 +4,87 @@
 
 #REGION=$REGION
 
-for REGIONLINE in $(aws --output=text ec2 describe-regions --region us-west-2 | sed 's/\s/,/g'); do
-	REGION=$(echo $REGIONLINE | cut -f3 -d,)
+REGION="us-west-1"
+
+# re-write so that we make a test matrix first, and then execute it - can paralellize then too
+
+
+#TODO: also create some using clout-condig files - for eg, wuth a different console, or with rancher..
+
+#for REGIONLINE in $(aws --output=text ec2 describe-regions --region us-west-2 | sed 's/\s/,/g'); do
+#	REGION=$(echo $REGIONLINE | cut -f3 -d,)
 	echo "Looking in $REGION for $RANCHEROS_VERSION"
 
-	# TODO: need a safer way to do this
-	#generate a key pair
-	KEY=auto-sven-os-$REGION
-	KEYFILE="$(pwd)/$KEY.pem"
-	NEWKEY="0"
 
 	# Get AMI names
 	for LINE in $(aws --output text ec2 describe-images --region $REGION --owner self --query 'Images[*].{ID:ImageId,Name:Name}'  | grep ${RANCHEROS_VERSION} | sed 's/\s/,/g' ); do
-		if [ ! -f "$KEYFILE" ]; then
-			NEWKEY="1"
-			echo "Generating a new Keypair $KEY"
-			aws --output=text ec2 create-key-pair --key-name $KEY --region $REGION | sed 's/.*\t---/---/' | sed 's/KEY-----\t.*/KEY-----/' > "$KEYFILE"
-			chmod 600 "$KEYFILE"
-		fi
 		AMI=$(echo "$LINE" | cut -f1 -d ',')
-		echo "starting $AMI in $REGION"
-		INSTANCE=$(aws --output text  ec2 run-instances --count 1 \
-			--image-id $AMI \
-			--instance-type t2.micro \
-			--region $REGION \
-			--key-name $KEY |  sed 's/\s/,/g' | grep INSTANCES)
-		ID=$(echo $INSTANCE | cut -f8 -d,)
-		IP=$(echo $INSTANCE | cut -f14 -d,)
-		echo "== $ID at $IP"
-		#echo $INSTANCE
-		count=1
-		while [ "$IP" == "" ]; do
-			sleep 1
-			INSTANCE=$(aws --output text ec2 describe-instances --instance-ids $ID --region $REGION | sed 's/\s/,/g' | grep INSTANCES)
+		#TODO: iterate through all types (or a reasonable set)
+		# json file url from http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/price-changes.html
+		# https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/index.json
+		# grep instanceType index\ \(2\).json | sort | uniq | sed 's/.*: "\(.*\)",/\1/g' | grep '\.' >ec2-types.txt
+		#ITYPE="t2.micro"
+		#ITYPE="m4.large"
+		for ITYPE in $(cat ./scripts/ec2-types.txt); do
+	
+			echo "starting $AMI on type $ITYPE in $REGION"
+			INSTANCE=$(aws --output text  ec2 run-instances --count 1 \
+				--image-id $AMI \
+				--instance-type $ITYPE \
+				--region $REGION \
+				--key-name $KEY |  sed 's/\s/,/g' | grep INSTANCES)
+			if [ "$?" != "0" ]; then
+				echo "SKIPPING this type"
+				continue
+			fi
+			echo "testing $AMI on type $ITYPE in $REGION"
+			ID=$(echo $INSTANCE | cut -f8 -d,)
 			IP=$(echo $INSTANCE | cut -f14 -d,)
-			echo "  $count == $ID at $IP"
-			count=$((1+$count))
-		done
-		STATE=""
-		echo "Waiting for instance to be initialized"
-		while [ "$STATE" != "running" ]; do
-			sleep 1
-			STATE=$(aws --output text ec2 describe-instances --instance-ids $ID --region $REGION | sed 's/\s/,/g' | grep STATE | cut -f3 -d,)
-			echo -ne "_"
-		done
-		while [ "$STATE" != "" ]; do
+			echo "== $ID at $IP"
+			#echo $INSTANCE
+			count=1
+			while [ "$IP" == "" ]; do
+				sleep 1
+				INSTANCE=$(aws --output text ec2 describe-instances --instance-ids $ID --region $REGION | sed 's/\s/,/g' | grep INSTANCES)
+				IP=$(echo $INSTANCE | cut -f14 -d,)
+				echo "  $count == $ID at $IP"
+				count=$((1+$count))
+			done
+			STATE=""
+			echo "Waiting for instance to be initialized"
+			while [ "$STATE" != "running" ]; do
+				sleep 1
+				STATE=$(aws --output text ec2 describe-instances --instance-ids $ID --region $REGION | sed 's/\s/,/g' | grep STATE | cut -f3 -d,)
+				echo -ne "_"
+			done
+			while [ "$STATE" != "" ]; do
+				sleep 5
+				STATE=$(aws --output text ec2 describe-instance-status --instance-ids $ID --region $REGION | sed 's/\s/,/g' | grep initializing )
+				echo -ne "."
+			done
+			echo sleeping
 			sleep 5
-			STATE=$(aws --output text ec2 describe-instance-status --instance-ids $ID --region $REGION | sed 's/\s/,/g' | grep initializing )
-			echo -ne "."
+	
+			echo "### requesting uname"
+			ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $KEYFILE rancher@$IP uname -a
+			if [ "$?" != "0" ]; then
+				echo "ERROR $?"
+			fi
+			echo "### running test.sh"
+			chmod 755 scripts/test.sh
+			scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $KEYFILE scripts/test.sh rancher@$IP:~/test.sh
+			ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $KEYFILE rancher@$IP ./test.sh
+			sleep 5
+			echo "### ros console list"
+			ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $KEYFILE rancher@$IP sudo ros console list
+	
+			echo "terminating ($ID) $AMI on type $ITYPE in $REGION"
+			aws --output text ec2 terminate-instances --instance-ids $ID --region $REGION
 		done
-		echo sleeping
-		sleep 5
-
-		echo "requesting uname"
-		ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $KEYFILE rancher@$IP uname -a
-		chmod 755 scripts/test.sh
-		scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $KEYFILE scripts/test.sh rancher@$IP:~/test.sh
-		ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $KEYFILE rancher@$IP ./test.sh
-		sleep 5
-		ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i $KEYFILE rancher@$IP ros console list
-
-		echo "Terminating $ID"
-		aws --output text ec2 terminate-instances --instance-ids $ID --region $REGION
 	done
-
+	
 	if [ "$NEWKEY" == "1" ]; then
 		aws --output=text ec2 delete-key-pair --key-name $KEY --region $REGION
 		rm -f $KEYFILE
 	fi
-done
+#done
