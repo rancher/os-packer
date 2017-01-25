@@ -1,0 +1,54 @@
+#!/bin/bash
+
+#set -ex
+
+PIDS=""
+TYPED=""
+
+#TODO: also create some using clout-condig files - for eg, wuth a different console, or with rancher..
+
+for REGIONLINE in $(aws --output=text ec2 describe-regions --region us-west-2 | sed 's/\s/,/g'); do
+	REGION=$(echo $REGIONLINE | cut -f3 -d,)
+	echo "Looking in $REGION for $RANCHEROS_VERSION"
+
+	# TODO: need a safer way to do this
+	#generate a key pair
+	KEY=auto-sven-os-$REGION
+	KEYFILE="$(pwd)/$KEY.pem"
+
+	# I've had some issues with re-using keys, so lets see what happens if we force it.
+	aws --output=text ec2 delete-key-pair --key-name $KEY --region $REGION
+	rm -f $KEYFILE
+
+	NEWKEY="0"
+
+	# Get AMI names
+	for LINE in $(aws --output text ec2 describe-images --region $REGION --owner self --query 'Images[*].{ID:ImageId,Name:Name}'  | grep ${RANCHEROS_VERSION} | sed 's/\s/,/g' ); do
+		AMI=$(echo "$LINE" | cut -f1 -d ',')
+
+		if [ ! -f "$KEYFILE" ]; then
+			NEWKEY="1"
+			echo "Generating a new Keypair $KEY"
+			aws --output=text ec2 create-key-pair --key-name $KEY --region $REGION | sed 's/.*\t---/---/' | sed 's/KEY-----\t.*/KEY-----/' > "$KEYFILE"
+			chmod 600 "$KEYFILE"
+		fi
+		# json file url from http://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/price-changes.html
+		# https://pricing.us-east-1.amazonaws.com/offers/v1.0/aws/AmazonEC2/current/index.json
+		# grep instanceType index\ \(2\).json | sort | uniq | sed 's/.*: "\(.*\)",/\1/g' | grep '\.' >ec2-types.txt
+		for ITYPE in $(cat ./scripts/ec2-types.txt | sort -R | head -n 4); do
+			T="[${ITYPE%%.*}]"
+			if [[ $TYPED == *"${T}"* ]]; then
+				continue
+			fi
+			echo "testing $T with $ITYPE"
+			TYPED="${TYPED}${T}"
+
+			echo "starting $AMI on type $ITYPE in $REGION"
+			./scripts/test-aws $AMI $ITYPE $REGION $KEY > "dist/test-$AMI-$REGION-$ITYPE.log" 2>&1 &
+			PIDS="$PIDS $!"
+		done
+	done
+done
+
+echo "Waiting for tests to complete"
+wait $PIDS
