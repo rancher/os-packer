@@ -1,0 +1,3 @@
+#!/bin/bash
+
+exec env FILE=rancheros-govcloud-aws-ami-test.json $(dirname $0)/build-aws
