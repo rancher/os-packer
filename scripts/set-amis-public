@@ -2,7 +2,10 @@
 
 set -e
 
-#REGION=$REGION
+cd $(dirname $0)/..
+
+echo > dist/amis.list
+echo > dist/ECSamis.list
 
 for REGIONLINE in $(aws --output=text ec2 describe-regions --region us-west-2 | sed 's/\s/,/g'); do
 	REGION=$(echo $REGIONLINE | cut -f3 -d,)
@@ -22,6 +25,16 @@ for REGIONLINE in $(aws --output=text ec2 describe-regions --region us-west-2 | 
 				--region $REGION
 			aws ec2 modify-snapshot-attribute --snapshot-id $SNAPSHOT --attribute createVolumePermission \
 				--operation-type add --group-names all --region $REGION
+			if [[ "$NAME" == *hvm* ]]; then
+# ap-south-1 | HVM | [ami-268cfd49](https://ap-south-1.console.aws.amazon.com/ec2/home?region=ap-south-1#launchInstanceWizard:ami=ami-268cfd49)
+				echo "${REGION} | HVM | [${AMI}](https://${REGION}.console.aws.amazon.com/ec2/home?region=${REGION}#launchInstanceWizard:ami=${AMI})" >> dist/amis.list
+			else
+				echo "${REGION} | HVM - ECS enabled | [${AMI}](https://${REGION}.console.aws.amazon.com/ec2/home?region=${REGION}#launchInstanceWizard:ami=${AMI})" >> dist/ECSamis.list
+			fi
 		fi
 	done
 done
+
+echo "See:"
+echo "  dist/amis.list"
+echo "  dist/ECSamis.list"
