@@ -15,18 +15,6 @@
             "instance_type": "m3.medium",
             "ssh_username": "rancher",
             "ami_name": "rancheros-{{user `version`}}-hvm-{{user `build`}}"
-        },
-        {
-            "type": "amazon-ebs",
-            "name": "amazon-ebs-ecs",
-            "region": "us-gov-west-1",
-            "ami_regions": [
-                "us-gov-west-1"
-            ],
-            "source_ami": "ami-0eb50f6f",
-            "instance_type": "m3.medium",
-            "ssh_username": "rancher",
-            "ami_name": "rancheros-{{user `version`}}-{{user `build`}}-amazon-ecs-optimized"
         }
     ],
     "provisioners": [
