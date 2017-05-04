@@ -4,9 +4,36 @@ set -e -x
 VERSION=${VERSION:?"VERSION is not set YYYYHJY"}
 PACKER_BUILDER_TYPE=${PACKER_BUILDER_TYPE:?"PACKER_BUILDER_TYPE is not set"}
 
+echo "type: $PACKER_BUILDER_TYPE"
+echo "name: $PACKER_BUILD_NAME"
+env
+echo "----------------------------------------"
+
 case $PACKER_BUILD_NAME in
 
+    "amazon-rancher")
+        echo "building amazon-rancher"
+        cat >cloud-config.yml<<EOF
+#cloud-config
+rancher:
+  resize_device: /dev/xvda
+  repositories:
+    master:
+      url: https://raw.githubusercontent.com/rancher/os-services/master/
+  services_include:
+    rancher-server: true
+  docker:
+    engine: docker-1.12.6
+  cloud_init:
+    datasources:
+      - ec2
+EOF
+        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/xvda -t amazon-ebs-hvm -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1
+        exit 0
+        ;;
+
     "amazon-ebs-ecs")
+        echo "building amazon-ebs-ecs"
         cat >cloud-config.yml<<EOF
 #cloud-config
 rancher:
@@ -35,6 +62,7 @@ EOF
         ;;
 
     "amazon-ebs")
+        echo "building amazon-ebs"
         cat >cloud-config.yml<<EOF
 #cloud-config
 rancher:
