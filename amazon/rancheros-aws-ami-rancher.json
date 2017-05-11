@@ -1,0 +1,29 @@
+{
+    "variables": {
+        "version": "{{env `RANCHEROS_VERSION`}}",
+        "build": "{{env `AWS_IMAGE_BUILD_NUMBER`}}"
+    },
+    "builders": [
+        {
+            "type": "amazon-ebs",
+            "name": "amazon-rancher",
+            "region": "us-west-1",
+            "ami_regions": [
+                "eu-west-1"
+            ],
+            "source_ami": "ami-877794c3",
+            "instance_type": "m3.medium",
+            "ssh_username": "rancher",
+            "ami_name": "rancher-on-rancheros-docker-1.12.6-{{user `version`}}-hvm-{{user `build`}}"
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "environment_vars": [
+                "VERSION={{user `version`}}"
+            ],
+            "script": "../scripts/install2disk"
+        }
+    ]
+}
