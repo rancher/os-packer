@@ -17,9 +17,6 @@ case $PACKER_BUILD_NAME in
 #cloud-config
 rancher:
   resize_device: /dev/xvda
-  repositories:
-    master:
-      url: https://raw.githubusercontent.com/rancher/os-services/master/
   services_include:
     rancher-server: true
   docker:
