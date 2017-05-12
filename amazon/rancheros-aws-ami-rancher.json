@@ -9,7 +9,7 @@
             "name": "amazon-rancher",
             "region": "us-west-1",
             "ami_regions": [
-                "eu-west-1"
+                "us-east-1"
             ],
             "source_ami": "ami-877794c3",
             "instance_type": "m3.medium",
