@@ -21,11 +21,8 @@ rancher:
     rancher-server: true
   docker:
     engine: docker-1.12.6
-  cloud_init:
-    datasources:
-      - ec2
 EOF
-        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/xvda -t amazon-ebs-hvm -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1
+        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/xvda -t amazon-ebs-hvm -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1 --append "rancher.cloud_init.datasources=[\"ec2\"]"
         exit 0
         ;;
 
@@ -37,11 +34,8 @@ rancher:
   resize_device: /dev/xvda
   services_include:
     amazon-ecs-agent: true
-  cloud_init:
-    datasources:
-      - ec2
 EOF
-        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/xvda -t amazon-ebs-hvm -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1
+        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/xvda -t amazon-ebs-hvm -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1 --append "rancher.cloud_init.datasources=[\"ec2\"]"
         exit 0
         ;;
 
@@ -64,22 +58,18 @@ EOF
 #cloud-config
 rancher:
   resize_device: /dev/xvda
-  cloud_init:
-    datasources:
-      - ec2
 EOF
-        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/xvda -t $PACKER_BUILD_NAME -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1
+        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/xvda -t $PACKER_BUILD_NAME -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1 --append "rancher.cloud_init.datasources=[\"ec2\"]"
         ;;
 
     "googlecompute")
-        cat >cloud-config.yml<<EOF
 #cloud-config
 rancher:
   cloud_init:
     datasources:
       - gce
 EOF
-        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/sda -t $PACKER_BUILDER_TYPE -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1 --append "console=ttyS0 rancher.autologin=ttyS0 rancher.debug=true printk.devkmsg=on"
+        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/sda -t $PACKER_BUILDER_TYPE -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1 --append "console=ttyS0 rancher.autologin=ttyS0 rancher.debug=true printk.devkmsg=on rancher.cloud_init.datasources=[\"gce\"]"
         ;;
 
     "qemu")

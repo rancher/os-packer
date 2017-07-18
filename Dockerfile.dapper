@@ -12,18 +12,17 @@ ENV DAPPER_RUN_ARGS --device=/dev/kvm:/dev/kvm
 ENV DAPPER_OUTPUT ./dist
 WORKDIR ${DAPPER_SOURCE}
 
-ENV RANCHEROS_VERSION v1.0.3
+ENV RANCHEROS_VERSION v1.1.0-rc1
 ENV AWS_IMAGE_BUILD_NUMBER 1
 
 COPY assets/* /
 RUN cd / \
     && if [ ! -f /rancheros.iso ]; then \
-        wget https://github.com/rancher/os/releases/download/${RANCHEROS_VERSION}/rancheros.iso \
+        wget https://releases.rancher.com/os/${RANCHEROS_VERSION}/rancheros.iso \
     ;fi \
     && if [ ! -f /iso-checksums.txt ]; then \
-        wget https://github.com/rancher/os/releases/download/${RANCHEROS_VERSION}/iso-checksums.txt \
+        wget https://releases.rancher.com/os/${RANCHEROS_VERSION}/iso-checksums.txt \
     ;fi
-
 
 ENTRYPOINT ["./scripts/entry"]
 CMD ["ci"]
