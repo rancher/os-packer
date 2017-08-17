@@ -69,7 +69,7 @@ rancher:
     datasources:
       - gce
 EOF
-        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/sda -t $PACKER_BUILDER_TYPE -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1 --append "console=ttyS0 rancher.autologin=ttyS0 rancher.debug=true printk.devkmsg=on rancher.cloud_init.datasources=[\"gce\"]"
+        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/sda -t $PACKER_BUILDER_TYPE -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1 --append "console=ttyS0 rancher.autologin=ttyS0 printk.devkmsg=on rancher.cloud_init.datasources=[\"gce\"]"
         ;;
 
     "qemu")
@@ -80,7 +80,7 @@ rancher:
     datasources:
       - gce
 EOF
-        sudo ros install -i rancher/os:${VERSION} -d /dev/sda -c $(pwd)/cloud-config.yml --no-reboot --debug --append "console=ttyS0 rancher.autologin=ttyS0 rancher.debug=true printk.devkmsg=on rancher.cloud_init.datasources=[\"gce\"]"
+        sudo ros install -i rancher/os:${VERSION} -d /dev/sda -c $(pwd)/cloud-config.yml --no-reboot --debug --append "console=ttyS0 rancher.autologin=ttyS0 printk.devkmsg=on rancher.cloud_init.datasources=[\"gce\"]"
         ;;
 
     *)
