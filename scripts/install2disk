@@ -80,7 +80,7 @@ rancher:
     datasources:
       - gce
 EOF
-        sudo ros install -d /dev/sda -f -c ./cloud-config.yml --no-reboot
+        sudo ros install -i rancher/os:${VERSION} -d /dev/sda -c $(pwd)/cloud-config.yml --no-reboot --debug --append "console=ttyS0 rancher.autologin=ttyS0 rancher.debug=true printk.devkmsg=on rancher.cloud_init.datasources=[\"gce\"]"
         ;;
 
     *)
