@@ -1,0 +1,15 @@
+#!/bin/bash
+
+cd $(dirname $0)/../aliyun
+
+export ISO_CHECKSUM=$(cat /iso-checksums.txt | grep md5 | sed 's/md5: \(.*\)  rancheros.iso/\1/')
+
+PACKER_LOG=1  packer build ${FILE:-aliyun-qemu.json}
+
+mv output-aliyun-ecs/packer-aliyun-ecs rancheros-aliyun.qcow2
+qemu-img convert -f qcow2 -O vpc rancheros-aliyun.qcow2 rancheros-aliyun.vhd
+mkdir -p ../dist
+mv  rancheros-aliyun.vhd ../dist/
+
+echo "upload the Aliyun image using:"
+echo "  ossutil cp rancheros-aliyun.vhd oss://<your-bucket>"

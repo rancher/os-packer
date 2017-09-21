@@ -4,3 +4,4 @@ cd $(dirname $0)
 
 ./build-aws
 ./build-gce
+./build-aliyun
