@@ -27,7 +27,8 @@
             "source_ami": "ami-877794c3",
             "instance_type": "m3.medium",
             "ssh_username": "rancher",
-            "ami_name": "rancheros-{{user `version`}}-hvm-{{user `build`}}"
+            "ami_name": "rancheros-{{user `version`}}-hvm-{{user `build`}}",
+            "ena_support": "true"
         },
         {
             "type": "amazon-ebs",
@@ -52,7 +53,8 @@
             "source_ami": "ami-877794c3",
             "instance_type": "m3.medium",
             "ssh_username": "rancher",
-            "ami_name": "rancheros-{{user `version`}}-{{user `build`}}-amazon-ecs-optimized"
+            "ami_name": "rancheros-{{user `version`}}-{{user `build`}}-amazon-ecs-optimized",
+            "ena_support": "true"
         }
     ],
     "provisioners": [
