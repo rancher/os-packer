@@ -46,6 +46,22 @@ EOF
         exit 0
         ;;
 
+    "qemu-googlecompute")
+        cat >cloud-config.yml<<EOF
+#cloud-config
+rancher:
+  docker:
+    extra_args: [--mtu, 1460]
+  system_docker:
+    extra_args: [--mtu, 1460]
+  cloud_init:
+    datasources:
+      - gce
+EOF
+        sudo ros install -i rancher/os:${VERSION} -d /dev/sda -c $(pwd)/cloud-config.yml --no-reboot --debug --append "console=ttyS0 rancher.autologin=ttyS0 printk.devkmsg=on rancher.cloud_init.datasources=[\"gce\"]"
+        exit 0
+        ;;
+
 esac
 
 case ${PACKER_BUILDER_TYPE} in
@@ -68,27 +84,6 @@ rancher:
   modules: [ena]
 EOF
         sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/xvda -t $PACKER_BUILD_NAME -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1 --append "rancher.cloud_init.datasources=[\"ec2\"]"
-        ;;
-
-    "googlecompute")
-#cloud-config
-rancher:
-  cloud_init:
-    datasources:
-      - gce
-EOF
-        sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/sda -t $PACKER_BUILDER_TYPE -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1 --append "console=ttyS0 rancher.autologin=ttyS0 printk.devkmsg=on rancher.cloud_init.datasources=[\"gce\"]"
-        ;;
-
-    "qemu")
-        cat >cloud-config.yml<<EOF
-#cloud-config
-rancher:
-  cloud_init:
-    datasources:
-      - gce
-EOF
-        sudo ros install -i rancher/os:${VERSION} -d /dev/sda -c $(pwd)/cloud-config.yml --no-reboot --debug --append "console=ttyS0 rancher.autologin=ttyS0 printk.devkmsg=on rancher.cloud_init.datasources=[\"gce\"]"
         ;;
 
     *)
