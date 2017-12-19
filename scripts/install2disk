@@ -42,7 +42,7 @@ EOF
 
     "aliyun-ecs")
         echo "building aliyun-ecs"
-        sudo ros install -i rancher/os:${VERSION} -d /dev/sda --no-reboot --debug --append "rancher.hypervisor_service=false rancher.autologin=tty1 rancher.cloud_init.datasources=[\"aliyun\"]"
+        sudo ros install -d /dev/sda --no-reboot --debug --append "rancher.hypervisor_service=false rancher.autologin=tty1 rancher.cloud_init.datasources=[\"aliyun\"]"
         exit 0
         ;;
 
@@ -58,7 +58,7 @@ rancher:
     datasources:
       - gce
 EOF
-        sudo ros install -i rancher/os:${VERSION} -d /dev/sda -c $(pwd)/cloud-config.yml --no-reboot --debug --append "console=ttyS0 rancher.autologin=ttyS0 printk.devkmsg=on rancher.cloud_init.datasources=[\"gce\"]"
+        sudo ros install -d /dev/sda -c $(pwd)/cloud-config.yml --no-reboot --debug --append "console=ttyS0 rancher.autologin=ttyS0 printk.devkmsg=on rancher.cloud_init.datasources=[\"gce\"]"
         exit 0
         ;;
 
