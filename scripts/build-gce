@@ -6,6 +6,8 @@ export ISO_CHECKSUM=$(cat /iso-checksums.txt | grep md5 | sed 's/md5: \(.*\)  ra
 
 PACKER_LOG=1  packer build ${FILE:-gce-qemu.json}
 
+RANCHEROS_VERSION=${RANCHEROS_VERSION:-test}
+
 mv output-qemu-googlecompute/packer-qemu-googlecompute disk.raw
 tar czvf rancheros-${RANCHEROS_VERSION}.tar.gz disk.raw
 mkdir -p ../dist

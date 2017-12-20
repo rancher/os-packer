@@ -1,7 +1,13 @@
 #!/bin/bash
 set -e -x
 
-VERSION=${VERSION:?"VERSION is not set YYYYHJY"}
+check_version() {
+    if [ -z "$VERSION" ]; then
+        echo "RANCHEROS_VERSION must be set"
+        exit 1
+    fi
+}
+
 PACKER_BUILDER_TYPE=${PACKER_BUILDER_TYPE:?"PACKER_BUILDER_TYPE is not set"}
 
 echo "type: $PACKER_BUILDER_TYPE"
@@ -22,6 +28,7 @@ rancher:
   docker:
     engine: docker-1.12.6
 EOF
+        check_version
         sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/xvda -t amazon-ebs-hvm -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1 --append "rancher.cloud_init.datasources=[\"ec2\"]"
         exit 0
         ;;
@@ -34,8 +41,9 @@ rancher:
   resize_device: /dev/xvda
   services_include:
     amazon-ecs-agent: true
-    modules: [ena]
+  modules: [ena]
 EOF
+        check_version
         sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/xvda -t amazon-ebs-hvm -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1 --append "rancher.cloud_init.datasources=[\"ec2\"]"
         exit 0
         ;;
@@ -83,6 +91,7 @@ rancher:
   resize_device: /dev/xvda
   modules: [ena]
 EOF
+        check_version
         sudo system-docker run --volumes-from=user-volumes --net=host --privileged rancher/os:${VERSION} -d /dev/xvda -t $PACKER_BUILD_NAME -c $(pwd)/cloud-config.yml --no-reboot --debug -p /dev/xvda1 --append "rancher.cloud_init.datasources=[\"ec2\"]"
         ;;
 

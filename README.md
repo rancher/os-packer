@@ -7,14 +7,13 @@ These scripts are used to build RancherOS for Vagrant, Amazon and GCE.
 
 ## Release process
 
-Once you have pushed the `rancher/os:vX.Y.Z` image to the hub,
-update the `RANCHEROS_VERSION` version in the `Dockerfile.dapper` to match.
+Once you have pushed the `rancher/os:vX.Y.Z` image to the hub.
 
-Then run `make test-build` to publish a private test version of the optimised
+Then run `RANCHEROS_VERSION=vX.Y.Z make test-build` to publish a private test version of the optimised
 and un-optimised AMI's to Amazon. Test these by making new EC2 machines.
 
 Once that's tested you can go on to publish the full set of AMI's and the GCE image
-using `make release`. (and for now, you need to upload the gce image using
+using `RANCHEROS_VERSION=vX.Y.Z make release`. (and for now, you need to upload the gce image using
 `gsutil cp ./rancheros-${RANCHEROS_VERSION}.tar.gz gs://ros-images/`.
 
 
