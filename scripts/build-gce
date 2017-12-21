@@ -14,10 +14,10 @@ mkdir -p ../dist
 mv rancheros-${RANCHEROS_VERSION}.tar.gz ../dist/
 
 echo "upload the GCE image using:"
-echo "  gsutil cp dist/rancheros-${RANCHEROS_VERSION}.tar.gz gs://releases.rancher.com/os/latest"
-echo "  gsutil cp dist/rancheros-${RANCHEROS_VERSION}.tar.gz gs://releases.rancher.com/os/${RANCHEROS_VERSION}"
+echo "  gsutil cp dist/rancheros-${RANCHEROS_VERSION}.tar.gz gs://releases.rancher.com/os/latest/rancheros-gce.tar.gz"
+echo "  gsutil cp dist/rancheros-${RANCHEROS_VERSION}.tar.gz gs://releases.rancher.com/os/${RANCHEROS_VERSION}/rancheros-gce.tar.gz"
 echo "upload the github release:"
-echo "  github-release upload  --user rancher --repo os --tag ${RANCHEROS_VERSION} --file dist/rancheros-${RANCHEROS_VERSION}.tar.gz --name rancheros-${RANCHEROS_VERSION}.tar.gz"
+echo "  github-release upload  --user rancher --repo os --tag ${RANCHEROS_VERSION} --file dist/rancheros-${RANCHEROS_VERSION}.tar.gz --name rancheros-gce.tar.gz"
 
 # and then push to gce
 # gsutil cp ./rancheros-${RANCHEROS_VERSION}.tar.gz gs://ros-images/
