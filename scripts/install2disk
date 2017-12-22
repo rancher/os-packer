@@ -49,8 +49,13 @@ EOF
         ;;
 
     "aliyun-ecs")
+        cat >cloud-config.yml<<EOF
+#cloud-config
+rancher:
+  resize_device: /dev/vda
+EOF
         echo "building aliyun-ecs"
-        sudo ros install -d /dev/sda --no-reboot --debug --append "rancher.hypervisor_service=false rancher.autologin=tty1 rancher.cloud_init.datasources=[\"aliyun\"]"
+        sudo ros install -d /dev/sda -c $(pwd)/cloud-config.yml --no-reboot --debug --append "rancher.hypervisor_service=false rancher.autologin=tty1 rancher.cloud_init.datasources=[\"aliyun\"]"
         exit 0
         ;;
 
@@ -58,13 +63,11 @@ EOF
         cat >cloud-config.yml<<EOF
 #cloud-config
 rancher:
+  resize_device: /dev/sda
   docker:
     extra_args: [--mtu, 1460]
   system_docker:
     extra_args: [--mtu, 1460]
-  cloud_init:
-    datasources:
-      - gce
 EOF
         sudo ros install -d /dev/sda -c $(pwd)/cloud-config.yml --no-reboot --debug --append "console=ttyS0 rancher.autologin=ttyS0 printk.devkmsg=on rancher.cloud_init.datasources=[\"gce\"]"
         exit 0
