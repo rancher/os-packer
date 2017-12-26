@@ -38,7 +38,6 @@ EOF
         cat >cloud-config.yml<<EOF
 #cloud-config
 rancher:
-  resize_device: /dev/xvda
   services_include:
     amazon-ecs-agent: true
   modules: [ena]
@@ -91,7 +90,6 @@ EOF
         cat >cloud-config.yml<<EOF
 #cloud-config
 rancher:
-  resize_device: /dev/xvda
   modules: [ena]
 EOF
         check_version
