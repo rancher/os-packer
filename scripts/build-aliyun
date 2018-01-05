@@ -15,5 +15,8 @@ mv  rancheros-aliyun.vhd ../dist/
 
 echo "upload the Aliyun image using:"
 echo "  ossutil cp rancheros-aliyun.vhd oss://<your-bucket>"
+echo "upload the GCE image using:"
+echo "  gsutil cp dist/rancheros-aliyun.vhd gs://releases.rancher.com/os/latest/rancheros-aliyun.vhd"
+echo "  gsutil cp dist/rancheros-aliyun.vhd gs://releases.rancher.com/os/${RANCHEROS_VERSION}/rancheros-aliyun.vhd"
 echo "upload the github release:"
 echo "  github-release upload  --user rancher --repo os --tag ${RANCHEROS_VERSION} --file dist/rancheros-aliyun.vhd --name rancheros-aliyun.vhd"
