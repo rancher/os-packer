@@ -3,7 +3,7 @@ FROM golang:1.8.5
 ARG RANCHEROS_VERSION
 ARG AWS_IMAGE_BUILD_NUMBER
 
-RUN go get github.com/mitchellh/packer
+RUN go get github.com/hashicorp/packer
 
 RUN apt-get update \
     && apt-get install -yq qemu-system-x86 python-pip python-yaml \
