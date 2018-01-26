@@ -24,7 +24,7 @@
      "ssh_port": 22,
      "net_device": "virtio-net",
      "disk_interface": "scsi",
-     "boot_wait": "45s",
+     "boot_wait": "60s",
      "boot_command":
      [
         "sudo -i<enter>",
