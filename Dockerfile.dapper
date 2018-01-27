@@ -1,12 +1,11 @@
-FROM golang:1.8.5
+FROM ubuntu:16.04
 
+ARG PACKER_VERSION=1.1.3
 ARG RANCHEROS_VERSION
 ARG AWS_IMAGE_BUILD_NUMBER
 
-RUN go get github.com/hashicorp/packer
-
 RUN apt-get update \
-    && apt-get install -yq qemu-system-x86 python-pip python-yaml \
+    && apt-get install -yq qemu-system-x86 python-pip python-yaml curl unzip \
     && pip install awscli
 
 ENV DAPPER_SOURCE /source
@@ -21,11 +20,13 @@ ENV AWS_IMAGE_BUILD_NUMBER ${AWS_IMAGE_BUILD_NUMBER:-1}
 COPY assets/* /
 RUN cd / \
     && if [ ! -f /rancheros.iso ]; then \
-        wget https://releases.rancher.com/os/${RANCHEROS_VERSION}/rancheros.iso \
+        curl -sSLO https://releases.rancher.com/os/${RANCHEROS_VERSION}/rancheros.iso \
     ;fi \
     && if [ ! -f /iso-checksums.txt ]; then \
-        wget https://releases.rancher.com/os/${RANCHEROS_VERSION}/iso-checksums.txt \
-    ;fi
+        curl -sSLO https://releases.rancher.com/os/${RANCHEROS_VERSION}/iso-checksums.txt \
+    ;fi \
+    && curl -sSLO https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip \
+    && unzip packer_${PACKER_VERSION}_linux_amd64.zip -d /usr/local/bin/
 
 ENTRYPOINT ["./scripts/entry"]
 CMD ["ci"]
