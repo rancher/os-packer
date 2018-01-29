@@ -2,7 +2,8 @@
  "variables": {
      "version": "{{env `RANCHEROS_VERSION`}}",
      "build": "{{env `AWS_IMAGE_BUILD_NUMBER`}}",
-     "checksum": "{{env `ISO_CHECKSUM`}}"
+     "checksum": "{{env `ISO_CHECKSUM`}}",
+     "boot_wait": "{{env `PACKER_BOOT_WAIT`}}"
  },
  "builders":
  [
@@ -24,7 +25,7 @@
      "ssh_port": 22,
      "net_device": "virtio-net",
      "disk_interface": "scsi",
-     "boot_wait": "60s",
+     "boot_wait": "{{user `boot_wait`}}",
      "boot_command":
      [
         "sudo -i<enter>",
