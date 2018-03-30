@@ -1,0 +1,39 @@
+#!/bin/bash
+
+set -e
+
+cd $(dirname $0)/..
+
+echo > dist/amis.list
+echo > dist/ECSamis.list
+
+for REGIONLINE in $(aws --output=text ec2 describe-regions --region cn-north-1 | sed 's/\s/,/g'); do
+	REGION=$(echo $REGIONLINE | cut -f3 -d,)
+	#echo "Looking in $REGION for $RANCHEROS_VERSION"
+
+	# Get AMI name
+	for LINE in $(aws --output text ec2 describe-images --region $REGION --owner self --query 'Images[*].{ID:ImageId,Name:Name,SnapshotId:BlockDeviceMappings[0].Ebs.SnapshotId}'  | grep ${RANCHEROS_VERSION} | sed 's/\s/,/g' ); do
+
+		AMI=$(echo "$LINE" | cut -f1 -d ',')
+		NAME=$(echo "$LINE" | cut -f2 -d ',')
+		SNAPSHOT=$(echo "$LINE" | cut -f3 -d ',')
+		if [[ "$NAME" == *test* ]]; then
+			echo "      Skipping test $NAME: $AMI with $SNAPSHOT in $REGION"
+		else
+			echo "Setting public $NAME: $AMI with $SNAPSHOT in $REGION"
+			aws ec2 modify-image-attribute --image-id $AMI --launch-permission "{\"Add\": [{\"Group\":\"all\"}]}" \
+				--region $REGION
+			aws ec2 modify-snapshot-attribute --snapshot-id $SNAPSHOT --attribute createVolumePermission \
+				--operation-type add --group-names all --region $REGION
+			if [[ "$NAME" == *hvm* ]]; then
+				echo "${REGION} | HVM | [${AMI}](https://${REGION}.console.amazonaws.cn/ec2/home?region=${REGION}#launchInstanceWizard:ami=${AMI})" >> dist/amis.list
+			else
+				echo "${REGION} | HVM - ECS enabled | [${AMI}](https://${REGION}.console.amazonaws.cn/ec2/home?region=${REGION}#launchInstanceWizard:ami=${AMI})" >> dist/ECSamis.list
+			fi
+		fi
+	done
+done
+
+echo "See:"
+echo "  dist/amis.list"
+echo "  dist/ECSamis.list"

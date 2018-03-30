@@ -1,0 +1,42 @@
+{
+  "variables": {
+    "container": "{{ env `BOOTSTRAP_CONTAINER` }}"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "name": "builder-pv",
+      "region": "cn-north-1",
+      "source_ami": "ami-0a20b233",
+      "instance_type": "t1.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "packer-based-rancher-os-pv-builder-cn {{timestamp}}"
+    },
+    {
+      "type": "amazon-ebs",
+      "name": "builder-hvm",
+      "region": "cn-north-1",
+      "source_ami": "ami-0a20b233",
+      "instance_type": "t2.micro",
+      "ssh_username": "ubuntu",
+      "ami_name": "packer-based-rancher-os-hvm-builder-cn {{timestamp}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "sudo apt-get clean && sudo apt-get update --fix-missing && sudo apt-get install -y curl",
+        "curl -o /tmp/docker-install.sh -sSL https://get.docker.com",
+        "export VERSION=17.09.1",
+        "chmod +x /tmp/docker-install.sh && /tmp/docker-install.sh --mirror Aliyun"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo docker run -i --privileged {{ user `container` }} -d /dev/xvda -t bootstrap"
+      ]
+    }
+  ]
+}
