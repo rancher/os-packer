@@ -13,5 +13,8 @@ qemu-img convert -c -O qcow2 rancheros-cloudstack.qcow2 rancheros-cloudstack.img
 mkdir -p ../dist
 mv rancheros-cloudstack.img ../dist/
 
+echo "upload the CloudStack image using:"
+echo "  gsutil cp dist/rancheros-cloudstack.img gs://releases.rancher.com/os/latest/rancheros-cloudstack.img"
+echo "  gsutil cp dist/rancheros-cloudstack.img gs://releases.rancher.com/os/${RANCHEROS_VERSION}/rancheros-cloudstack.img"
 echo "upload the github release:"
 echo "  github-release upload  --user rancher --repo os --tag ${RANCHEROS_VERSION} --file dist/rancheros-cloudstack.img --name rancheros-cloudstack.img"
