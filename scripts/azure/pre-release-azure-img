@@ -1,0 +1,142 @@
+#!/bin/bash
+set -ex
+
+# check parameters
+if [ -z "$AZURE_REGION" ] || [ -z "$AZURE_ROS_SSH_PUBLIC_KEY" ]; then
+    echo AZURE_REGION and AZURE_ROS_SSH_PUBLIC_KEY must be set
+    exit 1
+fi
+
+# check jq is installed
+if [ ! -e /usr/bin/jq ] && [ ! -e /usr/sbin/jq ]; then
+    echo "Please install jq..."
+    exit 1
+fi
+
+# check azure cli is installed
+if [ ! -e /usr/bin/az ] && [ ! -e /usr/sbin/az ]; then
+    echo "Please install azure cli..."
+    exit 1
+fi
+
+# this will block the script
+az login
+if [ $? != 0 ]; then
+    echo "Login and authorization failed..."
+    exit 1
+fi
+
+# create azure resource group
+az group create -n rancheros -l $AZURE_REGION
+if [ $? != 0 ]; then
+    echo "Create azure resource group failed..."
+    exit 1
+fi
+
+# create azure network & subnet
+az network vnet create -g rancheros -n rancheros --address-prefix 10.0.0.0/16 --subnet-name rancheros --subnet-prefix 10.0.0.0/24
+if [ $? != 0 ]; then
+    echo "Create azure network & subnet failed..."
+    exit 1
+fi
+
+# create azure storage account
+az storage account create \
+    --resource-group rancheros \
+    --location $AZURE_REGION \
+    --name rancheros \
+    --kind Storage \
+    --sku Standard_LRS
+if [ $? != 0 ]; then
+    echo "Create azure storage account failed..."
+    exit 1
+fi
+
+# create azure storage container
+az storage container create \
+    --account-name rancheros \
+    --name rancheros
+if [ $? != 0 ]; then
+    echo "Create azure storage container failed..."
+    exit 1
+fi
+
+# list azure storage account keys
+AZURE_STORAGE_ACCOUNT_KEYS=`az storage account keys list --resource-group rancheros --account-name rancheros`
+if [ $? != 0 ]; then
+    echo "List azure storage account keys failed..."
+    exit 1
+fi
+AZURE_STORAGE_ACCOUNT_KEY_SIZE=`jq -r "." <<< $AZURE_STORAGE_ACCOUNT_KEYS | jq length`
+if [ $AZURE_STORAGE_ACCOUNT_KEY_SIZE -lt 1 ]; then
+    echo "No azure storage account keys"
+    exit 1
+fi
+AZURE_STORAGE_ACCOUNT_KEY_INDEX=`jq "map(.permissions == \"Full\") | index(true)" <<< $AZURE_STORAGE_ACCOUNT_KEYS`
+AZURE_STORAGE_ACCOUNT_KEY=`jq -r ".[$AZURE_STORAGE_ACCOUNT_KEY_INDEX].value" <<< $AZURE_STORAGE_ACCOUNT_KEYS`
+if [ -z "$AZURE_STORAGE_ACCOUNT_KEY" ]; then
+    echo "Parse azure storage account keys error"
+    exit 1
+fi
+
+# upload rancheros.vhd
+az storage blob upload --account-name rancheros \
+    --account-key $AZURE_STORAGE_ACCOUNT_KEY \
+    --container-name rancheros \
+    --type page \
+    --file ./dist/rancheros-azure.vhd \
+    --name rancheros.vhd
+if [ $? != 0 ]; then
+    echo "Upload rancheros.vhd failed..."
+    exit 1
+fi
+
+# create azure resource template
+cd $(dirname $0)
+az group deployment create --resource-group rancheros \
+    --name rancheros \
+    --template-file azuredeploy.json \
+    --parameters @azuredeploy.parameters.json
+if [ $? != 0 ]; then
+    echo "Create rancheros vm failed..."
+    exit 1
+fi
+
+# deallocate rancheros vm
+az vm deallocate --resource-group rancheros --name rancheros-vhd-vm
+if [ $? != 0 ]; then
+    echo "Deallocate rancheros vm failed..."
+    exit 1
+fi
+
+# generalize rancheros vm
+az vm generalize --resource-group rancheros --name rancheros-vhd-vm
+if [ $? != 0 ]; then
+    echo "Generalize rancheros vm failed..."
+    exit 1
+fi
+
+# create custom azure image
+az image create --resource-group rancheros --name rancheros --source rancheros-vhd-vm
+if [ $? != 0 ]; then
+    echo "Create custom azure image failed..."
+    exit 1
+fi
+
+# create rancheros-verify vm
+az vm create -g rancheros -n rancheros-verify --admin-username rancher  \
+          --image rancheros --size Standard_A1 --ssh-key-value "$AZURE_ROS_SSH_PUBLIC_KEY"
+if [ $? != 0 ]; then
+    echo "Create rancheros-verify vm failed..."
+    exit 1
+fi
+
+# logout azure
+az logout
+if [ $? != 0 ]; then
+    echo "Logout azure failed..."
+    exit 1
+fi
+
+
+
