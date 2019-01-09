@@ -89,7 +89,7 @@ EOF
 rancher:
   resize_device: /dev/vda
 EOF
-        echo "building cloudstack"
+        echo "building digitalocean"
         sudo ros install -d /dev/sda -c $(pwd)/cloud-config.yml --no-reboot --debug --append "console=tty1 printk.devkmsg=on notsc clocksource=kvm-clock rancher.network.interfaces.eth0.ipv4ll rancher.cloud_init.datasources=[\"digitalocean\"] rancher.autologin=tty1 rancher.autologin=ttyS0"
         exit 0
         ;;
