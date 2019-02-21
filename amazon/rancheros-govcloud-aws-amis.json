@@ -9,7 +9,8 @@
             "name": "amazon-ebs-hvm",
             "region": "us-gov-west-1",
             "ami_regions": [
-                "us-gov-west-1"
+                "us-gov-west-1",
+                "us-gov-east-1"
             ],
             "source_ami": "ami-0eb50f6f",
             "instance_type": "m3.medium",
