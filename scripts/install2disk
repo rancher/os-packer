@@ -127,6 +127,23 @@ EOF
         sudo ros install -d /dev/sda -f -c ./vagrant.yml --no-reboot
         ;;
 
+    "vmware-iso")
+        cat >cloud-config.yml<<EOF
+#cloud-config
+rancher:
+  services_include:
+    open-vm-tools: true
+EOF
+        sudo ros install -d /dev/sda -f -c ./cloud-config.yml --no-reboot
+        sudo mkdir /mnt/install
+        sudo mount /dev/sda1 /mnt/install
+        sudo mkdir -p /mnt/install/var/lib/rancher/preload/system-docker
+        sudo mkdir /mnt/install/var/lib/rancher/cache
+        sudo system-docker save rancher/os-openvmtools | xz > os-openvmtools.xz
+        sudo mv os-openvmtools.xz /mnt/install/var/lib/rancher/preload/system-docker/
+        sudo cp /var/lib/rancher/cache/* /mnt/install/var/lib/rancher/cache/
+        ;;
+
     "amazon-ebs")
         echo "building amazon-ebs"
         cat >cloud-config.yml<<EOF

@@ -4,3 +4,4 @@ output
 dist/
 account.json
 /.dapper
+packer_cache

@@ -1,0 +1,73 @@
+{
+  "variables": {
+    "version": "{{ env `RANCHEROS_VERSION` }}",
+    "checksum": "{{ env `ISO_CHECKSUM` }}",
+    "boot_wait": "{{ env `PACKER_BOOT_WAIT` }}",
+    "vsphere_cluster": "{{ env `GOVC_CLUSTER` }}",
+    "vsphere_datacenter": "{{ env `GOVC_DATACENTER` }}",
+    "vsphere_datastore": "{{ env `GOVC_DATASTORE` }}",
+    "vsphere_host": "{{ env `GOVC_URL` }}",
+    "vsphere_password": "{{ env `GOVC_PASSWORD` }}",
+    "vsphere_username": "{{ env `GOVC_USERNAME` }}",
+    "vsphere_insecure": "{{ env `GOVC_INSECURE` }}",
+    "vsphere_vm_folder": "{{ env `GOVC_VM_FOLDER` }}",
+    "vsphere_vm_network": "{{ env `GOVC_VM_NETWORK` }}"
+  },
+  "builders":[{
+    "name": "rancheros-{{ user `version` }}",
+    "type": "vmware-iso",
+    "guest_os_type": "otherLinux-64",
+    "iso_url": "https://github.com/rancher/os/releases/download/v{{ user `version` }}/rancheros.iso",
+    "iso_checksum": "{{ user `checksum` }}",
+    "iso_checksum_type": "md5",
+    "ssh_username": "rancher",
+    "ssh_password": "rancher",
+    "headless": true,
+    "boot_command": [
+      "sudo -i<enter>",
+      "echo rancher:rancher | chpasswd<enter>"
+    ],
+    "boot_wait": "{{user `boot_wait`}}",
+    "ssh_wait_timeout": "240s",
+    "shutdown_command": "sudo shutdown -h now",
+    "disk_size":"16384",
+    "vm_name":"rancheros-{{ user `version` }}",
+    "cpus": "2",
+    "memory": "2048",
+    "network_adapter_type": "vmxnet3"
+  }],
+  "provisioners":[{
+    "type": "shell",
+    "scripts": [
+      "../scripts/install2disk"
+    ]
+  }],
+  "post-processors": [
+    [
+      {
+        "name": "vsphere-upload",
+        "type": "vsphere",
+        "cluster": "{{ user `vsphere_cluster` }}",
+        "datacenter": "{{ user `vsphere_datacenter` }}",
+        "datastore": "{{ user `vsphere_datastore` }}",
+        "host": "{{ user `vsphere_host` }}",
+        "password": "{{ user `vsphere_password` }}",
+        "username": "{{ user `vsphere_username` }}",
+        "insecure": "{{ user `vsphere_insecure` }}",
+        "vm_name": "rancheros-{{ user `version` }}",
+        "disk_mode": "thin",
+        "vm_folder": "{{ user `vsphere_vm_folder` }}",
+        "vm_network": "{{ user `vsphere_vm_network` }}"
+      },
+      {
+        "type": "vsphere-template",
+        "host": "{{ user `vsphere_host` }}",
+        "password": "{{ user `vsphere_password` }}",
+        "username": "{{ user `vsphere_username` }}",
+        "insecure": "{{ user `vsphere_insecure` }}",
+        "datacenter": "{{ user `vsphere_datacenter` }}",
+        "folder": "{{ user `vsphere_vm_folder` }}"
+      }
+    ]
+  ]
+}
