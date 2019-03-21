@@ -114,6 +114,51 @@ EOF
         exit 0
         ;;
 
+    "pingan-ecs")
+        cat >cloud-config.yml<<EOF
+#cloud-config
+write_files:
+  - path: /etc/rc.local
+    permissions: "0755"
+    owner: root
+    content: |
+      #!/bin/bash
+      METADATA_SERVER="100.68.11.8"
+      CONF_FILE="/etc/ssh/sshd_config"
+      for _ in {1..10};do
+        ping -c 2 -W 1 \$METADATA_SERVER > /dev/null 2>&1
+        if [[ \$? -eq 0 ]];then
+          wget -O /tmp/password http://\$METADATA_SERVER/latest/meta-data/password
+          break
+        else
+          sleep 1
+          echo "\`date "+%Y-%m-%d %H:%M:%S"\` level=warning msg=\"METADATA_SERVER \$METADATA_SERVER connection failed!\""> /dev/tty0
+        fi
+      done
+
+      # Because /etc/shadow is not a persistent file
+      if [[ -s /tmp/password  ]];then
+        echo root:\`cat /tmp/password\`|chpasswd
+        cp /etc/shadow /usr/share/ros/shadow.bak
+        rm /tmp/password
+      else
+        cp /usr/share/ros/shadow.bak /etc/shadow
+      fi
+      # Allow root user login
+      sed -i 's/^PermitRootLogin.*$/PermitRootLogin yes/g' \$CONF_FILE
+      sed -i 's/^AllowGroups.*$//g' \$CONF_FILE
+
+      pingan_amc_status=\`ros s list | grep pingan-amc | awk '{print \$1}'\`
+      if [[  \$pingan_amc_status != "enabled" ]];then
+        ros s enable pingan-amc
+        ros s up pingan-amc
+      fi
+EOF
+        echo "building pingan-ecs"
+        sudo ros install -d /dev/sda -c $(pwd)/cloud-config.yml --no-reboot --debug --append "console=tty1 console=ttyS0,115200n8 printk.devkmsg=on rancher.autologin=ttyS0"
+        exit 0
+        ;;
+
 esac
 
 case ${PACKER_BUILDER_TYPE} in

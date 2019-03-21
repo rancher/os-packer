@@ -9,3 +9,4 @@ cd $(dirname $0)
 ./build-openstack
 ./build-digitalocean
 ./build-azure
+./build-pingan
