@@ -1,0 +1,20 @@
+#!/bin/bash
+
+cd $(dirname $0)/../pingan
+
+export ISO_CHECKSUM=$(cat /iso-checksums.txt | grep md5 | sed 's/md5: \(.*\)  rancheros.iso/\1/')
+
+PACKER_LOG=1 packer build ${FILE:-pingan-qemu.json}
+
+RANCHEROS_VERSION=${RANCHEROS_VERSION:-test}
+
+mv output-pingan-ecs/packer-pingan-ecs rancheros-pingan.qcow2
+qemu-img convert -c -O qcow2 rancheros-pingan.qcow2 rancheros-pingan.img
+mkdir -p ../dist
+mv rancheros-pingan.img ../dist/
+
+echo "upload the pingan image using:"
+echo "  gsutil cp dist/rancheros-pingan.img gs://releases.rancher.com/os/latest/rancheros-pingan.img"
+echo "  gsutil cp dist/rancheros-pingan.img gs://releases.rancher.com/os/${RANCHEROS_VERSION}/rancheros-pingan.img"
+echo "upload the github release:"
+echo "  github-release upload  --user rancher --repo os --tag ${RANCHEROS_VERSION} --file dist/rancheros-pingan.img --name rancheros-pingan.img"

@@ -1,0 +1,48 @@
+{
+ "variables": {
+     "version": "{{env `RANCHEROS_VERSION`}}",
+     "build": "{{env `AWS_IMAGE_BUILD_NUMBER`}}",
+     "checksum": "{{env `ISO_CHECKSUM`}}",
+     "boot_wait": "{{env `PACKER_BOOT_WAIT`}}"
+ },
+ "builders":
+ [
+   {
+     "type": "qemu",
+     "name": "pingan-ecs",
+     "iso_url": "/rancheros.iso",
+     "iso_checksum": "{{user `checksum`}}",
+     "iso_checksum_type": "md5",
+     "ssh_wait_timeout": "360s",
+     "disk_size": 61440,
+     "format": "qcow2",
+     "headless": false,
+     "accelerator": "kvm",
+     "ssh_host_port_min": 2225,
+     "ssh_host_port_max": 2229,
+     "ssh_username": "rancher",
+     "ssh_password": "rancher",
+     "ssh_port": 22,
+     "net_device": "virtio-net",
+     "disk_interface": "scsi",
+     "boot_wait": "{{user `boot_wait`}}",
+     "boot_command":
+     [
+        "sudo -i<enter>",
+        "echo rancher:rancher | chpasswd<enter>"
+     ],
+     "qemuargs": [
+       ["-m", "1400M"], ["-nographic"], ["-display", "none"]
+     ]
+   }
+ ],
+ "provisioners": [
+   {
+     "type":"shell",
+     "environment_vars": [
+        "VERSION={{user `version`}}"
+     ],
+     "script": "../scripts/install2disk"
+   }
+ ]
+}
