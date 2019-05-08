@@ -68,7 +68,7 @@ EOF
         echo "umount /mnt/cdrom/secure"
         sudo umount /mnt/cdrom/secure
         echo "building azure"
-        sudo ros install -d /dev/sda -c $(pwd)/cloud-config.yml --no-reboot --debug --append "rancher.autologin=tty1 console=ttyS0 earlyprintk=ttyS0 rootdelay=300"
+        sudo ros install -d /dev/sda -c $(pwd)/cloud-config.yml --no-reboot --debug --append "rancher.autologin=tty1 console=ttyS0 earlyprintk=ttyS0 rootdelay=300 rancher.cloud_init.datasources=[\"azure\"]"
         exit 0
         ;;
 
