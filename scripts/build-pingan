@@ -2,8 +2,6 @@
 
 cd $(dirname $0)/../pingan
 
-export ISO_CHECKSUM=$(cat /iso-checksums.txt | grep md5 | sed 's/md5: \(.*\)  rancheros.iso/\1/')
-
 PACKER_LOG=1 packer build ${FILE:-pingan-qemu.json}
 
 RANCHEROS_VERSION=${RANCHEROS_VERSION:-test}

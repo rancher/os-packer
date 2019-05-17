@@ -3,6 +3,7 @@ FROM golang:1.11.3
 ARG PACKER_BOOT_WAIT=60s
 ARG RANCHEROS_VERSION
 ARG AWS_IMAGE_BUILD_NUMBER
+ARG ISO_CHECKSUM
 
 RUN go get github.com/hashicorp/packer
 
@@ -16,17 +17,15 @@ ENV DAPPER_RUN_ARGS --device=/dev/kvm:/dev/kvm --privileged
 ENV DAPPER_OUTPUT ./dist
 WORKDIR ${DAPPER_SOURCE}
 
-ENV RANCHEROS_VERSION ${RANCHEROS_VERSION}
-ENV AWS_IMAGE_BUILD_NUMBER ${AWS_IMAGE_BUILD_NUMBER:-1}
-ENV PACKER_BOOT_WAIT ${PACKER_BOOT_WAIT}
+ENV RANCHEROS_VERSION=${RANCHEROS_VERSION} \
+    AWS_IMAGE_BUILD_NUMBER=${AWS_IMAGE_BUILD_NUMBER:-1} \
+    PACKER_BOOT_WAIT=${PACKER_BOOT_WAIT} \
+    ISO_CHECKSUM=${ISO_CHECKSUM}
 
 COPY assets/* /
 RUN cd / \
     && if [ ! -f /rancheros.iso ]; then \
         wget https://releases.rancher.com/os/${RANCHEROS_VERSION}/rancheros.iso \
-    ;fi \
-    && if [ ! -f /iso-checksums.txt ]; then \
-        wget https://releases.rancher.com/os/${RANCHEROS_VERSION}/iso-checksums.txt \
     ;fi
 
 ENTRYPOINT ["./scripts/entry"]
