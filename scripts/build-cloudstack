@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source $(dirname $0)/build-common
+
 cd $(dirname $0)/../cloudstack
 
 PACKER_LOG=1 packer build ${FILE:-cloudstack-qemu.json}

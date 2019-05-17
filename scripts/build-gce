@@ -1,8 +1,10 @@
 #!/bin/bash
 
+source $(dirname $0)/build-common
+
 cd $(dirname $0)/../gce
 
-PACKER_LOG=1  packer build ${FILE:-gce-qemu.json}
+PACKER_LOG=1 packer build ${FILE:-gce-qemu.json}
 
 RANCHEROS_VERSION=${RANCHEROS_VERSION:-test}
 

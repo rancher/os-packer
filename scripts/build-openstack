@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source $(dirname $0)/build-common
+
 cd $(dirname $0)/../openstack
 
 PACKER_LOG=1 packer build ${FILE:-openstack-qemu.json}

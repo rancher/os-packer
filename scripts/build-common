@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export ISO_CHECKSUM=$(md5sum /rancheros.iso | awk '{print $1}')
+
