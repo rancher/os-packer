@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source $(dirname $0)/build-common
+Load_ISO openstack
 
 cd $(dirname $0)/../openstack
 

@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source $(dirname $0)/build-common
+Load_ISO pingan
 
 cd $(dirname $0)/../pingan
 

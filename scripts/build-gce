@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source $(dirname $0)/build-common
+Load_ISO gce
 
 cd $(dirname $0)/../gce
 

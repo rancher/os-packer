@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source $(dirname $0)/build-common
+Load_ISO azure
+
 cd $(dirname $0)/../azure
 
 PACKER_LOG=1 packer build ${FILE:-azure-qemu.json}

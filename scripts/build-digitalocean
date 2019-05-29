@@ -1,6 +1,7 @@
 #!/bin/bash
 
 source $(dirname $0)/build-common
+Load_ISO digitalocean
 
 cd $(dirname $0)/../digitalocean
 

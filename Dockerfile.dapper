@@ -20,11 +20,5 @@ ENV RANCHEROS_VERSION=${RANCHEROS_VERSION} \
     AWS_IMAGE_BUILD_NUMBER=${AWS_IMAGE_BUILD_NUMBER:-1} \
     PACKER_BOOT_WAIT=${PACKER_BOOT_WAIT}
 
-COPY assets/* /
-RUN cd / \
-    && if [ ! -f /rancheros.iso ]; then \
-        wget https://releases.rancher.com/os/${RANCHEROS_VERSION}/rancheros.iso \
-    ;fi
-
 ENTRYPOINT ["./scripts/entry"]
 CMD ["ci"]

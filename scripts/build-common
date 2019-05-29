@@ -1,4 +1,30 @@
 #!/bin/bash
 
-export ISO_CHECKSUM=$(md5sum /rancheros.iso | awk '{print $1}')
 
+Load_ISO() {
+    local cloud_type=$1
+    local iso_url
+
+    ASSETS_ISO_FILE=$(dirname $0)/../assets/rancheros.iso
+
+    if [ -f ${ASSETS_ISO_FILE} ]; then
+        cp ${ASSETS_ISO_FILE} /rancheros.iso
+    fi
+
+    if [ ! -f /rancheros.iso ]; then
+        case $cloud_type in
+            "pingan")
+                iso_url=https://releases.rancher.com/os/${RANCHEROS_VERSION}/pingan/rancheros.iso
+                ;;
+            "azure")
+                iso_url=https://releases.rancher.com/os/${RANCHEROS_VERSION}/azure/rancheros.iso
+                ;;
+            *)
+                iso_url=https://releases.rancher.com/os/${RANCHEROS_VERSION}/rancheros.iso
+                ;;
+        esac
+        wget -O /rancheros.iso $iso_url
+    fi
+
+    export ISO_CHECKSUM=$(md5sum /rancheros.iso | awk '{print $1}')
+}
