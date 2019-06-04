@@ -83,6 +83,7 @@ fi
 az storage blob upload --account-name rancheros \
     --account-key $AZURE_STORAGE_ACCOUNT_KEY \
     --container-name rancheros \
+    --content-cache-control "max-age=3600" \
     --type page \
     --file ./dist/rancheros-azure.vhd \
     --name rancheros.vhd
