@@ -169,6 +169,7 @@
             "osType": "[parameters('osType')]",
             "caching": "ReadWrite",
             "createOption": "Attach",
+            "diskSizeGB": 40,
             "managedDisk": {
               "id": "[resourceId('Microsoft.Compute/disks', concat(parameters('vmName'), '_OSdisk'))]"
             }

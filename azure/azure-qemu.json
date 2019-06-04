@@ -14,7 +14,7 @@
      "iso_checksum": "{{user `checksum`}}",
      "iso_checksum_type": "md5",
      "ssh_wait_timeout": "360s",
-     "disk_size": 10000,
+     "disk_size": 40000,
      "format": "raw",
      "headless": false,
      "accelerator": "kvm",
