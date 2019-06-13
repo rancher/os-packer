@@ -19,6 +19,9 @@ Load_ISO() {
             "azure")
                 iso_url=https://releases.rancher.com/os/${RANCHEROS_VERSION}/azure/rancheros.iso
                 ;;
+            "openstack" | "cloudstack" | "gce" | "aliyun" | "digitalocean")
+                iso_url=https://releases.rancher.com/os/${RANCHEROS_VERSION}/rancheros-nofirmware.iso
+                ;;
             *)
                 iso_url=https://releases.rancher.com/os/${RANCHEROS_VERSION}/rancheros.iso
                 ;;
