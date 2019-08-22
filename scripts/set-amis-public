@@ -8,7 +8,7 @@ echo > dist/amis.list
 echo > dist/ECSamis.list
 
 for REGIONLINE in $(aws --output=text ec2 describe-regions --region us-west-2 | sed 's/\s/,/g'); do
-	REGION=$(echo $REGIONLINE | cut -f3 -d,)
+	REGION=$(echo $REGIONLINE | cut -f4 -d,)
 	#echo "Looking in $REGION for $RANCHEROS_VERSION"
 
 	# Get AMI name
