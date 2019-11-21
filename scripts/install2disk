@@ -38,6 +38,14 @@ EOF
         cat >cloud-config.yml<<EOF
 #cloud-config
 rancher:
+  network:
+    post_cmds:
+      - iptables -t nat -A PREROUTING -p tcp -d 169.254.170.2 --dport 80 -j DNAT --to-destination 127.0.0.1:51679
+      - iptables -t nat -A OUTPUT -d 169.254.170.2 -p tcp -m tcp --dport 80 -j REDIRECT --to-ports 51679
+      - iptables --insert DOCKER-USER 1 --in-interface docker+ --destination 169.254.169.254/32 --jump DROP
+      - iptables --insert DOCKER-USER 1 --in-interface docker-sys --destination 169.254.169.254/32 --jump ACCEPT
+  sysctl:
+    net.ipv4.conf.all.route_localnet: 1
   services_include:
     amazon-ecs-agent: true
   modules: [ena]
