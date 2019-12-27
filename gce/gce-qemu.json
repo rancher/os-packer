@@ -24,7 +24,7 @@
      "ssh_password": "rancher",
      "ssh_port": 22,
      "net_device": "virtio-net",
-     "disk_interface": "scsi",
+     "disk_interface": "virtio-scsi",
      "boot_wait": "{{user `boot_wait`}}",
      "boot_command":
      [
