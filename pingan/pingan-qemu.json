@@ -32,7 +32,7 @@
         "echo rancher:rancher | chpasswd<enter>"
      ],
      "qemuargs": [
-       ["-m", "1400M"], ["-nographic"], ["-display", "none"]
+       ["-m", "2048M"], ["-nographic"], ["-display", "none"]
      ]
    }
  ],
