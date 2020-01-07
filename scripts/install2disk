@@ -83,6 +83,17 @@ EOF
         exit 0
         ;;
 
+    "exoscale")
+        cat >cloud-config.yml<<EOF
+#cloud-config
+rancher:
+  resize_device: /dev/vda
+EOF
+        echo "building exoscale"
+        sudo ros install -d /dev/sda -c $(pwd)/cloud-config.yml --no-reboot --debug --append "console=tty1 console=ttyS0,115200n8 rancher.cloud_init.datasources=[\"exoscale\"] rancher.autologin=tty1 rancher.autologin=ttyS0"
+        exit 0
+        ;;
+
     "digitalocean")
         cat >cloud-config.yml<<EOF
 #cloud-config

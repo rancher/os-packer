@@ -10,3 +10,4 @@ cd $(dirname $0)
 ./build-digitalocean
 ./build-azure
 ./build-pingan
+./build-exoscale
