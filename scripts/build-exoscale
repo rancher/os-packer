@@ -10,9 +10,8 @@ PACKER_LOG=1 packer build ${FILE:-exoscale-qemu.json}
 RANCHEROS_VERSION=${RANCHEROS_VERSION:-test}
 
 mv output-exoscale/packer-exoscale rancheros-exoscale.qcow2
-qemu-img convert -c -O qcow2 rancheros-exoscale.qcow2 rancheros-exoscale.img
 mkdir -p ../dist
-mv rancheros-exoscale.img ../dist/
+mv rancheros-exoscale.qcow2 ../dist/
 
 echo "upload the Exoscale image using:"
 echo "  gsutil cp dist/rancheros-exoscale.img gs://releases.rancher.com/os/latest/rancheros-exoscale.img"
